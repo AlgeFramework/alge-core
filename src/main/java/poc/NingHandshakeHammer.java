@@ -1,8 +1,7 @@
 package poc;
 
-import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
-import com.sfdc.http.client.AsyncHttpClient;
+import com.sfdc.http.client.NingAsyncHttpClientImpl;
 import com.sfdc.http.client.handler.BasicAsyncHandler;
 import com.sfdc.http.util.SoapLoginUtil;
 import org.apache.commons.lang3.time.StopWatch;
@@ -10,30 +9,33 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * @author psrinivasan
  *         Date: 8/29/12
  *         Time: 11:05 PM
  */
-public class HandshakeHammer {
-    private AsyncHttpClient asyncHttpClient;
+public class NingHandshakeHammer {
+    private NingAsyncHttpClientImpl asyncHttpClient;
     private int num_handshakes;
-    private List<ListenableFuture<Response>> futures;
+    private List<Future<Response>> futures;
     private String instance;
     private String sessionId;
     private StopWatch stopWatch;
 
 
-    public HandshakeHammer(int num_handshakes) throws Exception {
+    public NingHandshakeHammer(int num_handshakes) throws Exception {
         stopWatch = new StopWatch();
-        asyncHttpClient = new AsyncHttpClient();
+        asyncHttpClient = new NingAsyncHttpClientImpl();
         this.num_handshakes = num_handshakes;
         String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8",
                 "123456", "https://ist6.soma.salesforce.com/");
+//        String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8",
+//                "123456", "http://ist6-app1-1-sfm.ops.sfdc.net:8085");
         sessionId = credentials[0];
         instance = credentials[1];
-        futures = new ArrayList<ListenableFuture<Response>>();
+        futures = new ArrayList<Future<Response>>();
 
     }
 
@@ -47,7 +49,7 @@ public class HandshakeHammer {
     }
 
     public void reapHandshakeResponses() throws ExecutionException, InterruptedException {
-        for (ListenableFuture<Response> future : futures) {
+        for (Future<Response> future : futures) {
             future.get();
         }
         stopWatch.stop();
@@ -55,7 +57,7 @@ public class HandshakeHammer {
     }
 
     public static void main(String[] args) throws Exception {
-        HandshakeHammer h = new HandshakeHammer(1);
+        NingHandshakeHammer h = new NingHandshakeHammer(1000);
         h.queueHandshakes();
         h.reapHandshakeResponses();
 

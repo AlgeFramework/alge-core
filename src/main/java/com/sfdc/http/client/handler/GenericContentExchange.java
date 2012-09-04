@@ -1,124 +1,49 @@
-package com.sfdc.http.client;
+package com.sfdc.http.client.handler;
 
-import com.ning.http.client.Cookie;
-import com.ning.http.client.FluentCaseInsensitiveStringsMap;
+import org.apache.commons.lang3.time.StopWatch;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.eclipse.jetty.client.ContentExchange;
+import org.eclipse.jetty.http.HttpFields;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author psrinivasan
- *         Date: 8/28/12
- *         Time: 6:29 PM
+ *         Date: 8/31/12
+ *         Time: 1:36 PM
  */
-public class StreamingResponse implements com.ning.http.client.Response {
+public class GenericContentExchange extends ContentExchange {
+    private StopWatch stopWatch;
 
-    private com.ning.http.client.Response response;
-
-    public StreamingResponse(com.ning.http.client.Response response) {
-        this.response = response;
+    public GenericContentExchange() {
+        super();
+        stopWatch = new StopWatch();
     }
 
     @Override
-    public int getStatusCode() {
-        return response.getStatusCode();
+    protected void onRequestCommitted() throws IOException {
+        stopWatch.start();
+        super.onRequestCommitted();
     }
 
     @Override
-    public String getStatusText() {
-        return response.getStatusText();
-    }
-
-    @Override
-    public byte[] getResponseBodyAsBytes() throws IOException {
-        return response.getResponseBodyAsBytes();
-    }
-
-    @Override
-    public InputStream getResponseBodyAsStream() throws IOException {
-        return response.getResponseBodyAsStream();
-    }
-
-    @Override
-    public String getResponseBodyExcerpt(int i, String s) throws IOException {
-        return response.getResponseBodyExcerpt(i, s);
-    }
-
-    @Override
-    public String getResponseBody(String s) throws IOException {
-        return response.getResponseBody(s);
-    }
-
-    @Override
-    public String getResponseBodyExcerpt(int i) throws IOException {
-        return response.getResponseBodyExcerpt(i);
-    }
-
-    @Override
-    public String getResponseBody() throws IOException {
-        return response.getResponseBody();
-    }
-
-    @Override
-    public URI getUri() throws MalformedURLException {
-        return response.getUri();
-    }
-
-    @Override
-    public String getContentType() {
-        return response.getContentType();
-    }
-
-    @Override
-    public String getHeader(String s) {
-        return response.getHeader(s);
-    }
-
-    @Override
-    public List<String> getHeaders(String s) {
-        return response.getHeaders(s);
-    }
-
-    @Override
-    public FluentCaseInsensitiveStringsMap getHeaders() {
-        return response.getHeaders();
-    }
-
-    @Override
-    public boolean isRedirected() {
-        return response.isRedirected();
-    }
-
-    @Override
-    public List<Cookie> getCookies() {
-        return response.getCookies();
-    }
-
-    @Override
-    public boolean hasResponseStatus() {
-        return response.hasResponseStatus();
-    }
-
-    @Override
-    public boolean hasResponseHeaders() {
-        return response.hasResponseHeaders();
-    }
-
-    @Override
-    public boolean hasResponseBody() {
-        return response.hasResponseBody();
+    protected void onResponseComplete() throws IOException {
+        stopWatch.stop();
+        HttpFields httpFields = getResponseFields();
+        try {
+            System.out.println("time elapsed = " + stopWatch.getTime() + "; http status = " + getResponseStatus() + "; clientId = " + getClientId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onResponseComplete();
     }
 
     public String getClientId() throws Exception {
         String responseBody = null;
         try {
-            responseBody = response.getResponseBody();
+            responseBody = getResponseContent();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,7 +60,7 @@ public class StreamingResponse implements com.ning.http.client.Response {
     public String getChannel() throws Exception {
         String responseBody = null;
         try {
-            responseBody = response.getResponseBody();
+            responseBody = getResponseContent();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -158,7 +83,7 @@ public class StreamingResponse implements com.ning.http.client.Response {
     public String getSubscription() throws Exception {
         String responseBody = null;
         try {
-            responseBody = response.getResponseBody();
+            responseBody = getResponseContent();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,7 +100,7 @@ public class StreamingResponse implements com.ning.http.client.Response {
     public boolean getBayeuxSuccessResponseField() throws Exception {
         String responseBody = null;
         try {
-            responseBody = response.getResponseBody();
+            responseBody = getResponseContent();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -211,4 +136,6 @@ public class StreamingResponse implements com.ning.http.client.Response {
         }
         throw new Exception("could not find(or parse) " + searchString + " field in Bayeux response");
     }
+
+
 }

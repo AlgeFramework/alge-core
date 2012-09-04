@@ -1,10 +1,8 @@
 package com.sfdc.http.client.handler;
 
 import com.ning.http.client.*;
-import com.sfdc.http.client.StreamingResponse;
+import com.sfdc.http.client.NingResponse;
 import org.apache.commons.lang3.time.StopWatch;
-
-import java.util.HashSet;
 
 /**
  * @author psrinivasan
@@ -50,7 +48,7 @@ public class BasicAsyncHandler implements com.ning.http.client.AsyncHandler {
     public Object onCompleted() throws Exception {
         stopWatch.stop();
         Response r = builder.build();
-        StreamingResponse sr = new StreamingResponse(r);
+        NingResponse sr = new NingResponse(r);
         System.out.println("elapsed time: " + stopWatch.getTime() + "; status code = " + r.getStatusCode() + "; client Id = " + sr.getClientId() + "; successful = " + sr.getBayeuxSuccessResponseField());
         return r;
     }

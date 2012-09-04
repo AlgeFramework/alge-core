@@ -25,6 +25,13 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
 
     public GenericAsyncHandler() {
         stopWatch = new StopWatch();
+    }
+
+    /*
+    * Timer is started from a request filter, this ensures that we start timing the request at the last possible
+    * moment before sending the request down the wire.
+    */
+    public void startRequestTimer() {
         stopWatch.start();
     }
 

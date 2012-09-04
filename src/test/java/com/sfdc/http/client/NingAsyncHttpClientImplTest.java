@@ -1,7 +1,6 @@
 package com.sfdc.http.client;
 
 import com.ning.http.client.Cookie;
-import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import com.sfdc.http.util.SoapLoginUtil;
 import junit.framework.TestCase;
@@ -10,6 +9,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -17,10 +18,10 @@ import java.util.List;
  *         Date: 8/25/12
  *         Time: 10:56 PM
  */
-public class AsyncHttpClientTest extends TestCase {
+public class NingAsyncHttpClientImplTest extends TestCase {
     private String sessionId;
     private String instance;
-    private AsyncHttpClient asyncHttpClient;
+    private NingAsyncHttpClientImpl asyncHttpClient;
 
     public void setUp() throws Exception {
         String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8", "123456", "https://ist6.soma.salesforce.com/");
@@ -28,7 +29,7 @@ public class AsyncHttpClientTest extends TestCase {
 
         sessionId = credentials[0];
         instance = credentials[1];
-        asyncHttpClient = new AsyncHttpClient();
+        asyncHttpClient = new NingAsyncHttpClientImpl();
     }
 
     public void tearDown() throws Exception {
@@ -37,15 +38,17 @@ public class AsyncHttpClientTest extends TestCase {
 
     public void testSoql() throws Exception {
         String soql = "select Id from Account limit 1";
-        ListenableFuture<Response> future = asyncHttpClient.soql(instance, soql, sessionId);
+        Future<Response> future = asyncHttpClient.soql(instance, soql, sessionId);
         Response response = future.get();
         assertEquals(200, response.getStatusCode());
         assertEquals("OK", response.getStatusText());
     }
 
     public void testStreamingHandshake() throws Exception, InterruptedException, IOException {
-        ListenableFuture<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
+        long time1 = System.currentTimeMillis();
+        Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
+        System.out.println("Time taken = " + (System.currentTimeMillis() - time1));
         String responseBody = response.getResponseBody();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(responseBody);
@@ -56,6 +59,8 @@ public class AsyncHttpClientTest extends TestCase {
         //System.out.println("number of cookies = " + cookies.size());
         Cookie streamingCookie = new Cookie(null, "NULL_TEST_COOKIE", "NULL_TEST_COOKIE", "/", 0, false);
         Cookie bayeuxBrowserCookie = new Cookie(null, "NULL_TEST_COOKIE", "NULL_TEST_COOKIE", "/", 0, false);
+        //Cookie streamingCookie = null;
+        //Cookie bayeuxBrowserCookie = null;
         for (int i = 0; i < cookies.size(); i++) {
             //System.out.println(cookies.get(i).getName());
             if (cookies.get(i).getName().equals("sfdc-stream")) {
@@ -68,13 +73,13 @@ public class AsyncHttpClientTest extends TestCase {
         assertEquals("sfdc-stream", streamingCookie.getName());
         assertEquals("BAYEUX_BROWSER", bayeuxBrowserCookie.getName());
         assertEquals(1, rootNode.size());
-        StreamingResponse sr = new StreamingResponse(response);
+        NingResponse sr = new NingResponse(response);
         assertTrue(sr.getBayeuxSuccessResponseField());
         assertEquals("/meta/handshake", sr.getChannel());
     }
 
     public void testConnect() throws Exception, InterruptedException, IOException {
-        ListenableFuture<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
+        Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
         Cookie streamingCookie = null;
@@ -90,28 +95,28 @@ public class AsyncHttpClientTest extends TestCase {
         JsonNode rootNode = mapper.readTree(responseBody);
         System.out.println("size of array = " + rootNode.size());
         //String clientID = rootNode.get(0).path("clientId").asText();
-        StreamingResponse streamingResponse = new StreamingResponse(response);
-        String clientID = streamingResponse.getClientId();
+        NingResponse ningResponse = new NingResponse(response);
+        String clientID = ningResponse.getClientId();
         System.out.println("clientId: " + clientID);
-        ListenableFuture<Response> connectFuture = asyncHttpClient.streamingConnect(instance, sessionId, cookies, clientID);
+        Future<Response> connectFuture = asyncHttpClient.streamingConnect(instance, sessionId, cookies, clientID);
         Response connectResponse = connectFuture.get();
         System.out.println("response body: " + connectResponse.getResponseBody());
-        StreamingResponse sr = new StreamingResponse(connectResponse);
+        NingResponse sr = new NingResponse(connectResponse);
         assertTrue(sr.getBayeuxSuccessResponseField());
         System.out.println("success? " + sr.getBayeuxSuccessResponseField());
     }
 
     public void testSubscribe() throws Exception, InterruptedException, IOException {
         /* HANDSHAKE */
-        ListenableFuture<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
+        Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
-        StreamingResponse streamingResponse = new StreamingResponse(response);
-        String clientID = streamingResponse.getClientId();
+        NingResponse ningResponse = new NingResponse(response);
+        String clientID = ningResponse.getClientId();
         /* SUBSCRIBE */
-        ListenableFuture<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
+        Future<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
         Response subscribeResponse = subscribeFuture.get();
-        StreamingResponse srSubscribe = new StreamingResponse(subscribeResponse);
+        NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/subscribe", srSubscribe.getChannel());
         assertEquals("/topic/accountTopic", srSubscribe.getSubscription());
@@ -120,15 +125,15 @@ public class AsyncHttpClientTest extends TestCase {
 
     public void testDisconnect() throws Exception, InterruptedException, IOException {
         /* HANDSHAKE */
-        ListenableFuture<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
+        Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
-        StreamingResponse streamingResponse = new StreamingResponse(response);
-        String clientID = streamingResponse.getClientId();
+        NingResponse ningResponse = new NingResponse(response);
+        String clientID = ningResponse.getClientId();
         /* DISCONNECT */
-        ListenableFuture<Response> subscribeFuture = asyncHttpClient.streamingDisconnect(instance, sessionId, cookies, clientID);
+        Future<Response> subscribeFuture = asyncHttpClient.streamingDisconnect(instance, sessionId, cookies, clientID);
         Response subscribeResponse = subscribeFuture.get();
-        StreamingResponse srSubscribe = new StreamingResponse(subscribeResponse);
+        NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/disconnect", srSubscribe.getChannel());
     }
