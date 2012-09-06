@@ -23,8 +23,8 @@ public class ThrottlingResponseFilter implements ResponseFilter {
     }
 
     @Override
-    public <T> FilterContext<T> filter(FilterContext<T> tFilterContext) throws FilterException {
+    public FilterContext filter(FilterContext filterContext) throws FilterException {
         concurrencyPermit.release();
-        return tFilterContext;
+        return filterContext;
     }
 }

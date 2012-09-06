@@ -30,9 +30,9 @@ public class ThrottlingRequestFilter implements RequestFilter {
      * we start timing the request here, using the stop watch in the Handler.
      */
     @Override
-    public <T> FilterContext<T> filter(FilterContext<T> tFilterContext) throws FilterException {
-        ((GenericAsyncHandler) tFilterContext.getAsyncHandler()).startRequestTimer();
+    public FilterContext filter(FilterContext filterContext) throws FilterException {
+        ((GenericAsyncHandler) filterContext.getAsyncHandler()).startRequestTimer();
         LOGGER.info("Request Filter done.");
-        return tFilterContext;
+        return filterContext;
     }
 }
