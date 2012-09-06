@@ -17,13 +17,15 @@ public class Producer implements Runnable {
 
     private final BlockingQueue<WorkItem> queue;
     private static final Logger LOGGER = LoggerFactory.getLogger(Producer.class);
+    private int numHandshakes;
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
     private RequestGenerator requestGenerator;
 
 
-    public Producer(BlockingQueue<WorkItem> queue) throws Exception {
+    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes) throws Exception {
         this.queue = queue;
         requestGenerator = new RequestGenerator();
+        this.numHandshakes = numHandshakes;
     }
 
     /**
@@ -39,7 +41,7 @@ public class Producer implements Runnable {
      */
     @Override
     public void run() {
-        publish(1000);
+        publish(numHandshakes);
         LOGGER.info("publisher is done.  exiting");
     }
 
