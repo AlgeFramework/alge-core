@@ -73,6 +73,7 @@
                         <argument>-XX:+PrintGCTimeStamps</argument>
                         <argument>-XX:+PrintGCDetails</argument>
                         <argument>-Xloggc:streaming_client_gc.log</argument>
+                        <argument>-Djava.util.logging.config.file=src/main/resources/logging.properties</argument>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>com.sfdc.http.loadgen.Main</argument>

@@ -17,7 +17,7 @@ public class Producer implements Runnable {
 
     private final BlockingQueue<WorkItem> queue;
     private static final Logger LOGGER = LoggerFactory.getLogger(Producer.class);
-    // FIXME:  temporary declaration - it's not clear that we want request generator to be a instance var.
+    // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
     private RequestGenerator requestGenerator;
 
 

@@ -1,6 +1,8 @@
 package poc;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author psrinivasan
@@ -8,7 +10,10 @@ import org.apache.commons.lang3.time.StopWatch;
  *         Time: 11:33 AM
  */
 public class StopWatchTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StopWatchTest.class);
+
     public static void main(String[] args) {
+        LOGGER.info("in constructor");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try {
