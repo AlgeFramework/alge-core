@@ -14,10 +14,18 @@ import java.util.concurrent.Semaphore;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
+        int concurrency = 100000;
         LinkedBlockingDeque<WorkItem> queue = new LinkedBlockingDeque<WorkItem>();
-        Semaphore concurrencyPermit = new Semaphore(10000);
+        Semaphore concurrencyPermit = new Semaphore(concurrency);
         Producer producer = new Producer(queue);
         Consumer consumer = new Consumer(queue, concurrencyPermit);
+        Thread producerThread = new Thread(producer);
+        Thread consumerThread = new Thread(consumer);
+        producerThread.start();
+        consumerThread.start();
+        System.out.println("started producers and consumers");
+        producerThread.join();
+        consumerThread.join();
 
     }
 }

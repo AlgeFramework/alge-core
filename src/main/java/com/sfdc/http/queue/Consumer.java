@@ -19,13 +19,15 @@ import java.util.concurrent.Semaphore;
 public class Consumer implements Runnable {
     private final BlockingQueue<WorkItem> queue;
     private Semaphore concurrencyPermit;
-    NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
+    //NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
+    NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl();
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Consumer.class);
 
     public Consumer(BlockingQueue queue, Semaphore concurrencyPermit) {
         this.concurrencyPermit = concurrencyPermit;
         this.queue = queue;
-        LOGGER.info("Started Request Consumer.  Concurrency: %s", concurrencyPermit.availablePermits());
+        LOGGER.info("Started Request Consumer.  Max Concurrency: " + concurrencyPermit.availablePermits());
     }
 
     /**
@@ -71,6 +73,7 @@ public class Consumer implements Runnable {
         WorkItem.Operation operation = work.getOperation();
         switch (operation) {
             case HANDSHAKE:
+                LOGGER.info("Beginning handshake");
                 httpClient.streamingHandshake(instance, sessionId);
                 break;
             case CONNECT:

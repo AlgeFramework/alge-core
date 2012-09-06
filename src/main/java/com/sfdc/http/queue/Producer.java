@@ -3,7 +3,6 @@ package com.sfdc.http.queue;
 import com.sfdc.http.loadgen.RequestGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.util.LocaleServiceProviderPool;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -40,12 +39,16 @@ public class Producer implements Runnable {
      */
     @Override
     public void run() {
+        publish(1000);
+        LOGGER.info("publisher is done.  exiting");
     }
 
-    public void publish(WorkItem workItem) {
-        boolean result = queue.add(requestGenerator.generateHandshakeWorkItem());
-        if (!result) {
-            LOGGER.warn("Failed to publish request to queue");
+    public void publish(int num_requests) {
+        for (int i = 0; i < num_requests; i++) {
+            boolean result = queue.add(requestGenerator.generateHandshakeWorkItem());
+            if (!result) {
+                LOGGER.warn("Failed to publish request to queue");
+            }
         }
     }
 }

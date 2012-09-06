@@ -28,6 +28,7 @@ public class RequestGenerator {
 
         w.setInstance(instance);
         w.setSessionId(sessionId);
+        w.setOperation(WorkItem.Operation.HANDSHAKE);
         return w;
     }
 }

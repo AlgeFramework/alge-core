@@ -21,7 +21,8 @@ import java.util.concurrent.Semaphore;
 public class NingAsyncHttpClientImplTest extends TestCase {
     private String sessionId;
     private String instance;
-    private NingAsyncHttpClientImpl asyncHttpClient;
+    private NingAsyncHttpClientImpl asyncHttpClient_base;
+    private NingAsyncHttpClientImpl asyncHttpClient_concurrencyControl_base;
 
     public void setUp() throws Exception {
         String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8", "123456", "https://ist6.soma.salesforce.com/");
@@ -29,14 +30,16 @@ public class NingAsyncHttpClientImplTest extends TestCase {
 
         sessionId = credentials[0];
         instance = credentials[1];
-        asyncHttpClient = new NingAsyncHttpClientImpl();
+        asyncHttpClient_base = new NingAsyncHttpClientImpl();
+        asyncHttpClient_concurrencyControl_base = new NingAsyncHttpClientImpl(new Semaphore(1));
+
     }
 
     public void tearDown() throws Exception {
 
     }
 
-    public void testSoql() throws Exception {
+    public void soql_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws Exception {
         String soql = "select Id from Account limit 1";
         Future<Response> future = asyncHttpClient.soql(instance, soql, sessionId);
         Response response = future.get();
@@ -44,7 +47,15 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         assertEquals("OK", response.getStatusText());
     }
 
-    public void testStreamingHandshake() throws Exception, InterruptedException, IOException {
+    public void testSOQL_no_concurrency_control() throws Exception {
+        soql_base_test(asyncHttpClient_base);
+    }
+
+    public void testSOQL_concurrency_control() throws Exception {
+        soql_base_test(asyncHttpClient_concurrencyControl_base);
+    }
+
+    public void streamingHandshake_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws Exception, InterruptedException, IOException {
         long time1 = System.currentTimeMillis();
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
@@ -78,7 +89,15 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         assertEquals("/meta/handshake", sr.getChannel());
     }
 
-    public void testConnect() throws Exception, InterruptedException, IOException {
+    public void testStreamingHandshake_no_concurrency_control() throws Exception {
+        streamingHandshake_base_test(asyncHttpClient_base);
+    }
+
+    public void testStreamingHandshake_concurrency_control() throws Exception {
+        streamingHandshake_base_test(asyncHttpClient_concurrencyControl_base);
+    }
+
+    public void connect_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws Exception, InterruptedException, IOException {
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
@@ -106,7 +125,15 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         System.out.println("success? " + sr.getBayeuxSuccessResponseField());
     }
 
-    public void testSubscribe() throws Exception, InterruptedException, IOException {
+    public void testConnect_no_concurrency_control() throws Exception {
+        connect_base_test(asyncHttpClient_base);
+    }
+
+    public void testConnect_concurrency_control() throws Exception {
+        connect_base_test(asyncHttpClient_concurrencyControl_base);
+    }
+
+    public void subscribe_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws Exception, InterruptedException, IOException {
         /* HANDSHAKE */
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
@@ -123,7 +150,15 @@ public class NingAsyncHttpClientImplTest extends TestCase {
 
     }
 
-    public void testDisconnect() throws Exception, InterruptedException, IOException {
+    public void testSubscribe_no_concurrency_control() throws Exception {
+        subscribe_base_test(asyncHttpClient_base);
+    }
+
+    public void testSubscribe_concurrency_control() throws Exception {
+        subscribe_base_test(asyncHttpClient_concurrencyControl_base);
+    }
+
+    public void disconnect_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws Exception, InterruptedException, IOException {
         /* HANDSHAKE */
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
@@ -136,6 +171,14 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/disconnect", srSubscribe.getChannel());
+    }
+
+    public void testDisconnect_no_concurrency_control() throws Exception {
+        disconnect_base_test(asyncHttpClient_base);
+    }
+
+    public void testDisconnectconcurrency_control() throws Exception {
+        disconnect_base_test(asyncHttpClient_concurrencyControl_base);
     }
 
 }

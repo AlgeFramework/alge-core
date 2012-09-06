@@ -1,1 +1,13 @@
-This file was created by IntelliJ IDEA 11.1.3 for binding GitHub repository
+In order to run the handshakes stress test, use the target
+
+mvn package
+mvn exec:exec
+
+Other interesting mvn targets:
+mvn compile
+mvn test
+mvn package
+
+
+
+TODO:  more readme material.

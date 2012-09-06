@@ -7,17 +7,17 @@
 package com.sfdc.http.client;
 
 import com.ning.http.client.*;
+import com.ning.http.client.Cookie;
 import com.sfdc.http.client.filter.ThrottlingRequestFilter;
 import com.sfdc.http.client.filter.ThrottlingResponseFilter;
 import com.sfdc.http.client.handler.GenericAsyncHandler;
+import com.sfdc.http.client.handler.ThrottlingGenericAsyncHandler;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-
-import com.ning.http.client.Cookie;
 
 public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClient {
 
@@ -46,6 +46,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
                 .setMaximumConnectionsPerHost(MAX_CONNECTIONS_PER_HOST)
                 .addRequestFilter(new ThrottlingRequestFilter())
                 .build());
+        semaphore = null;
     }
 
     public BoundRequestBuilder prepareQuery(String instance, String soql, String sessionId) {
@@ -59,7 +60,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     public Future<Response> soql(String instance, String soql, String sessionId) {
         ListenableFuture<Response> future = null;
         try {
-            future = prepareQuery(instance, soql, sessionId).execute(new GenericAsyncHandler());
+            future = prepareQuery(instance, soql, sessionId).execute(returnAppropriateHandler());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +77,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     }
 
     public Future<Response> streamingHandshake(String instance, String sessionId) {
-        return streamingHandshake(instance, sessionId, new GenericAsyncHandler());
+        return streamingHandshake(instance, sessionId, returnAppropriateHandler());
     }
 
     public Future<Response> streamingHandshake(String instance, String sessionId, AsyncHandler asyncHandler) {
@@ -113,7 +114,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
             requestBuilder.addCookie(cookie);
         }
         try {
-            future = requestBuilder.execute(new GenericAsyncHandler());
+            future = requestBuilder.execute(returnAppropriateHandler());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,7 +122,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     }
 
     public Future<Response> streamingSubscribe(String instance, String sessionId, List<Cookie> cookies, String clientId, String channel) {
-        return streamingSubscribe(instance, sessionId, cookies, clientId, channel, new GenericAsyncHandler());
+        return streamingSubscribe(instance, sessionId, cookies, clientId, channel, returnAppropriateHandler());
     }
 
     public Future<Response> streamingSubscribe(String instance, String sessionId, List<Cookie> cookies, String clientId, String channel, AsyncHandler asyncHandler) {
@@ -142,7 +143,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     }
 
     public Future<Response> streamingDisconnect(String instance, String sessionId, List<Cookie> cookies, String clientId) {
-        return streamingDisconnect(instance, sessionId, cookies, clientId, new GenericAsyncHandler());
+        return streamingDisconnect(instance, sessionId, cookies, clientId, returnAppropriateHandler());
     }
 
     public Future<Response> streamingDisconnect(String instance, String sessionId, List<Cookie> cookies, String clientId, AsyncHandler asyncHandler) {
@@ -160,5 +161,9 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
             e.printStackTrace();
         }
         return future;
+    }
+
+    private AsyncHandler returnAppropriateHandler() {
+        return (semaphore == null) ? new GenericAsyncHandler() : new ThrottlingGenericAsyncHandler(semaphore);
     }
 }

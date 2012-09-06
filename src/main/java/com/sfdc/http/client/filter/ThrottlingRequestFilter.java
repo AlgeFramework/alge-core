@@ -4,8 +4,8 @@ import com.ning.http.client.filter.FilterContext;
 import com.ning.http.client.filter.FilterException;
 import com.ning.http.client.filter.RequestFilter;
 import com.sfdc.http.client.handler.GenericAsyncHandler;
-
-import java.util.concurrent.Semaphore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author psrinivasan
@@ -20,6 +20,9 @@ import java.util.concurrent.Semaphore;
  */
 public class ThrottlingRequestFilter implements RequestFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingRequestFilter.class);
+
+
     public ThrottlingRequestFilter() {
     }
 
@@ -29,6 +32,7 @@ public class ThrottlingRequestFilter implements RequestFilter {
     @Override
     public <T> FilterContext<T> filter(FilterContext<T> tFilterContext) throws FilterException {
         ((GenericAsyncHandler) tFilterContext.getAsyncHandler()).startRequestTimer();
+        LOGGER.info("Request Filter done.");
         return tFilterContext;
     }
 }
