@@ -23,6 +23,7 @@ public class Producer implements Runnable {
     private SessionIdReader sessionIdReader;
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
     private RequestGenerator requestGenerator;
+    private String instance;
 
 
     public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
@@ -30,6 +31,7 @@ public class Producer implements Runnable {
         requestGenerator = new RequestGenerator();
         this.numHandshakes = numHandshakes;
         this.sessionIdReader = sessionIdReader;
+        this.instance = instance;
     }
 
     /**
@@ -66,7 +68,7 @@ public class Producer implements Runnable {
     public void publishFromSessionIdFile() throws IOException {
         String sessionId;
         while ((sessionId = sessionIdReader.getOneSessionId()) != null) {
-            boolean result = queue.add(requestGenerator.generateHandshakeWorkItem(sessionId, null));
+            boolean result = queue.add(requestGenerator.generateHandshakeWorkItem(sessionId, instance));
             if (!result) {
                 LOGGER.warn("Failed to publish request to queue");
             }
