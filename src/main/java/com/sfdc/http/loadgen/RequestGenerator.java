@@ -31,4 +31,12 @@ public class RequestGenerator {
         w.setOperation(WorkItem.Operation.HANDSHAKE);
         return w;
     }
+
+    public WorkItem generateHandshakeWorkItem(String sessionId, String instance) {
+        WorkItem w = new WorkItem();
+        w.setInstance(instance);
+        w.setSessionId(sessionId);
+        w.setOperation(WorkItem.Operation.HANDSHAKE);
+        return w;
+    }
 }

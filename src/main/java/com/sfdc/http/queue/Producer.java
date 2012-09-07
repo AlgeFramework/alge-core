@@ -3,7 +3,9 @@ package com.sfdc.http.queue;
 import com.sfdc.http.loadgen.RequestGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poc.SessionIdReader;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -18,14 +20,16 @@ public class Producer implements Runnable {
     private final BlockingQueue<WorkItem> queue;
     private static final Logger LOGGER = LoggerFactory.getLogger(Producer.class);
     private int numHandshakes;
+    private SessionIdReader sessionIdReader;
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
     private RequestGenerator requestGenerator;
 
 
-    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes) throws Exception {
+    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
         this.queue = queue;
         requestGenerator = new RequestGenerator();
         this.numHandshakes = numHandshakes;
+        this.sessionIdReader = sessionIdReader;
     }
 
     /**
@@ -42,12 +46,27 @@ public class Producer implements Runnable {
     @Override
     public void run() {
         publish(numHandshakes);
-        LOGGER.info("publisher is done.  exiting");
+/*        try {
+            publishFromSessionIdFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        LOGGER.info("Producer is done.  exiting");
     }
 
     public void publish(int num_requests) {
         for (int i = 0; i < num_requests; i++) {
             boolean result = queue.add(requestGenerator.generateHandshakeWorkItem());
+            if (!result) {
+                LOGGER.warn("Failed to publish request to queue");
+            }
+        }
+    }
+
+    public void publishFromSessionIdFile() throws IOException {
+        String sessionId;
+        while ((sessionId = sessionIdReader.getOneSessionId()) != null) {
+            boolean result = queue.add(requestGenerator.generateHandshakeWorkItem(sessionId, null));
             if (!result) {
                 LOGGER.warn("Failed to publish request to queue");
             }

@@ -1,0 +1,45 @@
+%{
+//
+// Author: Prashant Srinivasan
+//
+%}
+
+%class Client
+%package com.sfdc.http.bayeux.fsm
+%fsmclass StreamingClientFSM
+%access package
+
+%start TaskFSM::Suspended
+%map TaskFSM
+%%
+Init
+{
+    ...
+}
+
+Handshaken
+{
+    ...
+}
+
+// Wait here to be either unblocked, stopped or deleted.
+Subscribed
+{
+    ...
+}
+
+Connected
+{
+    ...
+}
+
+Disconnected
+{
+    ...
+}
+
+Unsubscribed
+{
+    ...
+}
+%%
