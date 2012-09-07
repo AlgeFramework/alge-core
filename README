@@ -9,5 +9,6 @@ mvn test
 mvn package
 
 
-
+TODO: implement a client abstraction that allows for a handler to store session ids and usernames and appropriately log them.
+TODO:  implement state management for clients
 TODO:  more readme material.

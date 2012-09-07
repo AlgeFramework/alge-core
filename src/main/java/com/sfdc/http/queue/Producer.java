@@ -45,12 +45,12 @@ public class Producer implements Runnable {
      */
     @Override
     public void run() {
-        publish(numHandshakes);
-/*        try {
+        //publish(numHandshakes);
+        try {
             publishFromSessionIdFile();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         LOGGER.info("Producer is done.  exiting");
     }
 
