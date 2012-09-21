@@ -5,6 +5,7 @@ import com.ning.http.client.HttpResponseBodyPart;
 import com.ning.http.client.HttpResponseHeaders;
 import com.ning.http.client.HttpResponseStatus;
 import com.ning.http.client.Response;
+import com.sfdc.http.client.NingResponse;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,10 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
     * moment before sending the request down the wire.
     */
     public void startRequestTimer() {
+        System.out.println("GOING TO START STOPWATCH");
+
         stopWatch.start();
+        System.out.println("STARTED STOPWATCH");
     }
 
     @Override
@@ -63,7 +67,10 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
     @Override
     public Object onCompleted() throws Exception {
         stopWatch.stop();
+        System.out.println("STOPPED STOPWATCH");
+
         LOGGER.info("elapsed time: " + stopWatch.getTime());
+        stopWatch.reset();
         Response r = builder.build();
         byte[] bytes = r.getResponseBodyAsBytes();
         System.out.println("status code = " + r.getStatusCode());
@@ -71,5 +78,9 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
         System.out.println("output bytes = " + r.getResponseBody());
         System.out.println("thread name: " + Thread.currentThread().getName());
         return r;
+    }
+
+    public String getOperationType(NingResponse response) throws Exception {
+        return response.getChannel();
     }
 }

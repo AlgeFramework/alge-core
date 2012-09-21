@@ -1,6 +1,6 @@
 package com.sfdc.http.queue;
 
-import com.sfdc.http.loadgen.RequestGenerator;
+import com.sfdc.http.loadgen.RequestGeneratorPrototype;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poc.SessionIdReader;
@@ -22,16 +22,20 @@ public class Producer implements Runnable {
     private int numHandshakes;
     private SessionIdReader sessionIdReader;
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
-    private RequestGenerator requestGenerator;
+    private RequestGeneratorPrototype requestGeneratorPrototype;
     private String instance;
 
 
     public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
         this.queue = queue;
-        requestGenerator = new RequestGenerator();
+        requestGeneratorPrototype = new RequestGeneratorPrototype();
         this.numHandshakes = numHandshakes;
         this.sessionIdReader = sessionIdReader;
         this.instance = instance;
+    }
+
+    public Producer(BlockingQueue<WorkItem> queue) {
+        this.queue = queue;
     }
 
     /**
@@ -58,17 +62,23 @@ public class Producer implements Runnable {
 
     public void publish(int num_requests) {
         for (int i = 0; i < num_requests; i++) {
-            boolean result = queue.add(requestGenerator.generateHandshakeWorkItem());
+            boolean result = queue.add(requestGeneratorPrototype.generateHandshakeWorkItem());
             if (!result) {
                 LOGGER.warn("Failed to publish request to queue");
             }
         }
     }
 
+    public void publish(WorkItem w) {
+        if (!queue.add(w)) {
+            LOGGER.warn("Failed to publish request to queue");
+        }
+    }
+
     public void publishFromSessionIdFile() throws IOException {
         String sessionId;
         while ((sessionId = sessionIdReader.getOneSessionId()) != null) {
-            boolean result = queue.add(requestGenerator.generateHandshakeWorkItem(sessionId, instance));
+            boolean result = queue.add(requestGeneratorPrototype.generateHandshakeWorkItem(sessionId, instance));
             if (!result) {
                 LOGGER.warn("Failed to publish request to queue");
             }

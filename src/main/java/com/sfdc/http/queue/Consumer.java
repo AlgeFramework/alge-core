@@ -1,9 +1,12 @@
 package com.sfdc.http.queue;
 
+import com.ning.http.client.Cookie;
 import com.sfdc.http.client.NingAsyncHttpClientImpl;
+import com.sfdc.http.client.handler.StatefulHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 
@@ -14,18 +17,19 @@ import java.util.concurrent.Semaphore;
  *         <p/>
  *         An instance of the consumer will spawn one instance of the HttpClient.
  *         This is good insurance against any scalability bottlenecks in the HttpClient itself.
- *         We expect to have only a few instances of Consumer though.
+ *         We expect to have only a few instances of Consumer.
  */
 public class Consumer implements Runnable {
     private final BlockingQueue<WorkItem> queue;
-    private Semaphore concurrencyPermit;
-    //NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
-    NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl();
+    private final Semaphore concurrencyPermit;
+    private final NingAsyncHttpClientImpl httpClient;
+    //NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Consumer.class);
 
     public Consumer(BlockingQueue queue, Semaphore concurrencyPermit) {
         this.concurrencyPermit = concurrencyPermit;
+        httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
         this.queue = queue;
         LOGGER.info("Started Request Consumer.  Max Concurrency: " + concurrencyPermit.availablePermits());
     }
@@ -53,7 +57,7 @@ public class Consumer implements Runnable {
                 /*
                  * If we get a concurrency permit, then wait for work.  There is a chance, when there is no work.
                  * that we will lock up a concurrency permit and not do any work, but that's not a big issue since it
-                 * will lock up only one permit per consumer (we dont expect many consumer instances).
+                 * will lock up only one permit per consumer (we don't expect many consumer instances).
                  * We do want to make this better if we can.
                  */
                 WorkItem work = queue.take();
@@ -70,15 +74,22 @@ public class Consumer implements Runnable {
         String instance = work.getInstance();
         String sessionId = work.getSessionId();
         String clientID = work.getClientId();
+        List<Cookie> cookies = work.getCookies();
+        StatefulHandler handler = work.getHandler();
+        String subscriptionChannel = work.getChannel();
         WorkItem.Operation operation = work.getOperation();
         switch (operation) {
             case HANDSHAKE:
                 LOGGER.info("Beginning handshake");
-                httpClient.streamingHandshake(instance, sessionId);
+                httpClient.streamingHandshake(instance, sessionId, handler);
                 break;
             case CONNECT:
+                LOGGER.info("Beginning connect");
+                httpClient.streamingConnect(instance, sessionId, cookies, clientID, handler);
                 break;
             case SUBSCRIBE:
+                LOGGER.info("Beginning subscribe");
+                httpClient.streamingSubscribe(instance, sessionId, cookies, clientID, subscriptionChannel, handler);
                 break;
             case DISCONNECT:
                 break;

@@ -24,6 +24,6 @@ public interface SfdcConstants {
     /* These URI suffixes are there only to make debugging server logs easier */
     String HANDSHAKE = "/handshake";
     String CONNECT = "/connect";
-    String SUBSCRIBE = "/connect";
+    String SUBSCRIBE = "/subscribe";
     String DISCONNECT = "/disconnect";
 }

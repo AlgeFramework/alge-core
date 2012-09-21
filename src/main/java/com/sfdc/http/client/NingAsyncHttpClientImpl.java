@@ -35,6 +35,8 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
                 .setMaximumConnectionsTotal(MAX_CONNECTIONS_TOTAL)
                 .setMaximumConnectionsPerHost(MAX_CONNECTIONS_PER_HOST)
                 .addRequestFilter(new ThrottlingRequestFilter())
+                        //.setIdleConnectionTimeoutInMs(125000)  // calling this did not help cope with a 120s long poll.
+                .setRequestTimeoutInMs(125000)         //ditto.
                 .addResponseFilter(new ThrottlingResponseFilter(concurrencyPermit))
                 .build());
     }
@@ -45,6 +47,8 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
                 .setMaximumConnectionsTotal(MAX_CONNECTIONS_TOTAL)
                 .setMaximumConnectionsPerHost(MAX_CONNECTIONS_PER_HOST)
                 .addRequestFilter(new ThrottlingRequestFilter())
+                        //.setIdleConnectionTimeoutInMs(125000)  // calling this did not help cope with a 120s long poll.
+                .setRequestTimeoutInMs(125000)         //ditto.
                 .build());
         semaphore = null;
     }
@@ -105,6 +109,10 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     }
 
     public Future<Response> streamingConnect(String instance, String sessionId, List<Cookie> cookies, String clientId) {
+        return streamingConnect(instance, sessionId, cookies, clientId, returnAppropriateHandler());
+    }
+
+    public Future<Response> streamingConnect(String instance, String sessionId, List<Cookie> cookies, String clientId, AsyncHandler asyncHandler) {
         Future<Response> future = null;
         BoundRequestBuilder requestBuilder = preparePost(instance + SfdcConstants.DEFAULT_PUSH_ENDPOINT + SfdcConstants.CONNECT)
                 .addHeader("Authorization", "Bearer " + sessionId)
@@ -114,7 +122,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
             requestBuilder.addCookie(cookie);
         }
         try {
-            future = requestBuilder.execute(returnAppropriateHandler());
+            future = requestBuilder.execute(asyncHandler);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package com.sfdc.http.queue;
 
 import com.ning.http.client.Cookie;
+import com.sfdc.http.client.handler.StatefulHandler;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class WorkItem {
     private String clientId;
     private String instance;
     private List<Cookie> cookies;
+    private StatefulHandler handler;
+    private String subscriptionChannel;
 
     public enum Operation {HANDSHAKE, CONNECT, SUBSCRIBE, DISCONNECT, UNSUBSCRIBE}
 
@@ -25,6 +28,7 @@ public class WorkItem {
         instance = null;
         cookies = null;
         operation = null;
+        subscriptionChannel = null;
     }
 
     public void setSessionId(String s) {
@@ -47,6 +51,14 @@ public class WorkItem {
         operation = o;
     }
 
+    public void setHandler(StatefulHandler handler) {
+        this.handler = handler;
+    }
+
+    public void setChannel(String channel) {
+        this.subscriptionChannel = channel;
+    }
+
     public String getSessionId() {
         return sessionId;
     }
@@ -65,5 +77,13 @@ public class WorkItem {
 
     public Operation getOperation() {
         return operation;
+    }
+
+    public StatefulHandler getHandler() {
+        return handler;
+    }
+
+    public String getChannel() {
+        return subscriptionChannel;
     }
 }

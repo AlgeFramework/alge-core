@@ -65,9 +65,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         JsonNode rootNode = mapper.readTree(responseBody);
         //System.out.println("size of array = " + rootNode.size());
         System.out.println("clientId: " + rootNode.get(0).path("clientId").asText());
-        //System.out.println("successful: " + rootNode.get(0).path("successful").asText());
         List<Cookie> cookies = response.getCookies();
-        //System.out.println("number of cookies = " + cookies.size());
         Cookie streamingCookie = new Cookie(null, "NULL_TEST_COOKIE", "NULL_TEST_COOKIE", "/", 0, false);
         Cookie bayeuxBrowserCookie = new Cookie(null, "NULL_TEST_COOKIE", "NULL_TEST_COOKIE", "/", 0, false);
         //Cookie streamingCookie = null;
@@ -98,6 +96,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
     }
 
     public void connect_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws Exception, InterruptedException, IOException {
+        //handshake
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
@@ -117,6 +116,16 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         NingResponse ningResponse = new NingResponse(response);
         String clientID = ningResponse.getClientId();
         System.out.println("clientId: " + clientID);
+
+        //subscribe
+        Future<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
+        Response subscribeResponse = subscribeFuture.get();
+        NingResponse srSubscribe = new NingResponse(subscribeResponse);
+        assertTrue(srSubscribe.getBayeuxSuccessResponseField());
+        assertEquals("/meta/subscribe", srSubscribe.getChannel());
+        assertEquals("/topic/accountTopic", srSubscribe.getSubscription());
+
+        //now connect ...
         Future<Response> connectFuture = asyncHttpClient.streamingConnect(instance, sessionId, cookies, clientID);
         Response connectResponse = connectFuture.get();
         System.out.println("response body: " + connectResponse.getResponseBody());
@@ -143,6 +152,8 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         /* SUBSCRIBE */
         Future<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
         Response subscribeResponse = subscribeFuture.get();
+        subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
+        subscribeResponse = subscribeFuture.get();
         NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/subscribe", srSubscribe.getChannel());

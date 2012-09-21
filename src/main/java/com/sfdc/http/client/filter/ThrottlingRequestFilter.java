@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  *         Throttling RequestFilter does NOT throttle.  Throttling happens at the Consumer.
  *         This request filter is still useful to gather stats such as the timestamp when a request
  *         was sent to the server.
- *         We can't store pre request/response info here, since it appears(verify!) that only a single instance
+ *         We can't store pre request/response info here, since it appears only a single instance
  *         of a filter is created per http client instance.
  *         We should store per-request information in the handler,since we instantiate that once per connection.
  */
