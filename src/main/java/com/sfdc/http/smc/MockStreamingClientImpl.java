@@ -1,6 +1,7 @@
 package com.sfdc.http.smc;
 
 import com.ning.http.client.Cookie;
+import com.ning.http.client.Response;
 
 import java.util.List;
 
@@ -83,6 +84,16 @@ public class MockStreamingClientImpl implements StreamingClient {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void abortClientDueToBadCredentials(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void abortClientDueTo500(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     @Override
     public void onHandshakeComplete(List<Cookie> cookies, String clientId) {
@@ -127,6 +138,16 @@ public class MockStreamingClientImpl implements StreamingClient {
 
     @Override
     public void onReconnectRequest() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onInvalidAuthCredentials(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void on500Error(Response response) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

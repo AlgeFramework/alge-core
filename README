@@ -19,6 +19,17 @@ java -jar ~/projects/smc/bin/Smc.jar -table StreamingClientFSM.sm
 To generate a debug class:
 java -jar ~/projects/smc/bin/Smc.jar -g1 -sync -java StreamingClientFSM.sm
 
+
+
+mvn install:install-file
+  -Dfile=lib/Smc.jar
+  -DgroupId=org.myownsmcjar
+  -DartifactId=my_smc
+  -Dversion=1.0
+  -Dpackaging=jar
+  -DgeneratePom=true
+
+
 TODO: implement a client abstraction that allows for a handler to store session ids and usernames and appropriately log them.
 TODO:  implement state management for clients
 TODO:  more readme material.

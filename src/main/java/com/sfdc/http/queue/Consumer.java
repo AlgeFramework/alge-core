@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author psrinivasan
@@ -23,11 +24,11 @@ public class Consumer implements Runnable {
     private final BlockingQueue<WorkItem> queue;
     private final Semaphore concurrencyPermit;
     private final NingAsyncHttpClientImpl httpClient;
-    //NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl();
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Consumer.class);
+    private volatile boolean run;
 
     public Consumer(BlockingQueue queue, Semaphore concurrencyPermit) {
+        this.run = true;
         this.concurrencyPermit = concurrencyPermit;
         httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
         this.queue = queue;
@@ -47,7 +48,7 @@ public class Consumer implements Runnable {
      */
     @Override
     public void run() {
-        while (true) {
+        while (run) {
             try {
                 /*
                  * Wait to make sure that one gets the concurrency permit since we don't want a higher load concurrency
@@ -55,13 +56,17 @@ public class Consumer implements Runnable {
                  */
                 concurrencyPermit.acquire();
                 /*
-                 * If we get a concurrency permit, then wait for work.  There is a chance, when there is no work.
-                 * that we will lock up a concurrency permit and not do any work, but that's not a big issue since it
-                 * will lock up only one permit per consumer (we don't expect many consumer instances).
-                 * We do want to make this better if we can.
+                 * wait for a bit, and if we don't find work to do,
+                 * release our permit, and retry.
+                 *  This ensures that we can stop if someone has called "stop"
+                 *  and also reduces the chances that we will hog up
                  */
-                WorkItem work = queue.take();
-                processWorkItem(work);
+                WorkItem work = queue.poll(2, TimeUnit.SECONDS);
+                if (work != null) {
+                    processWorkItem(work);
+                } else {
+                    concurrencyPermit.release();
+                }
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -96,5 +101,9 @@ public class Consumer implements Runnable {
             case UNSUBSCRIBE:
                 break;
         }
+    }
+
+    public void stop() {
+        run = false;
     }
 }

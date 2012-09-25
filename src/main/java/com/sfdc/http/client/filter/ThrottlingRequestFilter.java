@@ -32,7 +32,7 @@ public class ThrottlingRequestFilter implements RequestFilter {
     @Override
     public FilterContext filter(FilterContext filterContext) throws FilterException {
         ((GenericAsyncHandler) filterContext.getAsyncHandler()).startRequestTimer();
-        LOGGER.info("Request Filter done.");
+        LOGGER.debug("Request Filter done.");
         return filterContext;
     }
 }

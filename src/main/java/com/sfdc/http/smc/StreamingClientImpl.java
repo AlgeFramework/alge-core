@@ -103,21 +103,21 @@ public class StreamingClientImpl implements StreamingClient {
     //this is an action initiated when in the initial state.
     @Override
     public void startHandshake() {
-        System.out.println("State before starting Handshake: Client State: " + getState());
+        //System.out.println("State before starting Handshake: Client State: " + getState());
 
-        System.out.println("starting handshake action");
-        currentFuture = httpClient.streamingHandshake(instance, sessionId, new StatefulHandler(this));
-        System.out.println("Started Handshake: Client State: " + getState());
+        //System.out.println("starting handshake action");
+        currentFuture = httpClient.streamingHandshake(instance, sessionId, new StatefulHandler(this, null));
+        //System.out.println("Started Handshake: Client State: " + getState());
         _fsm.onStartingHandshake(currentFuture);
     }
 
     @Override
     public void startSubscribe() {
-        System.out.println("going to start subscribe: Client State: " + getState() + " " + System.currentTimeMillis());
+        //System.out.println("going to start subscribe: Client State: " + getState() + " " + System.currentTimeMillis());
 
-        System.out.println("start subscribe action" + " " + System.currentTimeMillis());
-        currentFuture = httpClient.streamingSubscribe(instance, sessionId, cookies, clientId, "/topic/accountTopic", new StatefulHandler(this));
-        System.out.println("Started Subscribe: Client State: " + getState() + " " + System.currentTimeMillis());
+        //System.out.println("start subscribe action" + " " + System.currentTimeMillis());
+        currentFuture = httpClient.streamingSubscribe(instance, sessionId, cookies, clientId, "/topic/accountTopic", new StatefulHandler(this, null));
+        //System.out.println("Started Subscribe: Client State: " + getState() + " " + System.currentTimeMillis());
         //todo: find a way to pull topics information from a config file.  remember, we'll have to subscribe to 3 \
         // topics, not 1.
         _fsm.onStartingSubscribe(currentFuture);
@@ -125,9 +125,9 @@ public class StreamingClientImpl implements StreamingClient {
 
     @Override
     public void startConnect() {
-        System.out.println("going to start connect: Client State: " + getState());
-        currentFuture = httpClient.streamingConnect(instance, sessionId, cookies, clientId, new StatefulHandler(this));
-        System.out.println("Started Connect: Client State: " + getState());
+        //System.out.println("going to start connect: Client State: " + getState());
+        currentFuture = httpClient.streamingConnect(instance, sessionId, cookies, clientId, new StatefulHandler(this, null));
+        //System.out.println("Started Connect: Client State: " + getState());
         _fsm.onStartingConnect(currentFuture);
     }
 
@@ -148,6 +148,16 @@ public class StreamingClientImpl implements StreamingClient {
     @Override
     public void clientAborted() {
         System.out.println("CLIENT ABORTED");
+    }
+
+    @Override
+    public void abortClientDueToBadCredentials(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void abortClientDueTo500(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*
@@ -189,5 +199,15 @@ public class StreamingClientImpl implements StreamingClient {
     @Override
     public void onReconnectRequest() {
         _fsm.onReconnectRequest();
+    }
+
+    @Override
+    public void onInvalidAuthCredentials(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void on500Error(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

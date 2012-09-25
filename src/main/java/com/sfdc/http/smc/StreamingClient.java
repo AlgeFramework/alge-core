@@ -1,6 +1,7 @@
 package com.sfdc.http.smc;
 
 import com.ning.http.client.Cookie;
+import com.ning.http.client.Response;
 
 import java.util.List;
 
@@ -31,6 +32,10 @@ public interface StreamingClient {
 
     void clientAborted();
 
+    void abortClientDueToBadCredentials(Response response);
+
+    void abortClientDueTo500(Response response);
+
 
     /*
     * TRANSITIONS THAT WE INVOKE ON THE FSM
@@ -47,4 +52,8 @@ public interface StreamingClient {
     void onFinishedScenario();
 
     void onReconnectRequest();
+
+    void onInvalidAuthCredentials(Response response);
+
+    void on500Error(Response response);
 }

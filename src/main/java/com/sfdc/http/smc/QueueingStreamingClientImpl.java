@@ -1,12 +1,15 @@
 package com.sfdc.http.smc;
 
 import com.ning.http.client.Cookie;
+import com.ning.http.client.Response;
 import com.sfdc.http.client.handler.StatefulHandler;
 import com.sfdc.http.queue.Producer;
 import com.sfdc.http.queue.WorkItem;
+import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -65,11 +68,10 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     }
 
     public void start() {
-        _fsm.setDebugFlag(true);
+        //todo: need a parameterized way to enable/disable fsm debugging.
+        //_fsm.setDebugFlag(true);
         //_fsm.setDebugStream(System.out);
-        System.out.println("DEBUG FLAG IS SET TO: " + _fsm.getDebugFlag());
         _fsm.enterStartState();
-        System.out.println("start: Client State: " + getState());
     }
 
 
@@ -98,7 +100,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         w.setSessionId(sessionId);
         w.setCookies(cookies);
         w.setClientId(clientId);
-        w.setHandler(new StatefulHandler(this));
+        w.setHandler(new StatefulHandler(this, StatsManager.getInstance()));
         return w;
     }
 
@@ -146,6 +148,27 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     }
 
     @Override
+    public void abortClientDueToBadCredentials(Response response) {
+        try {
+            LOGGER.error("Client Aborted due to bad credentials.  Response: " + response.getResponseBody());
+        } catch (IOException e) {
+            LOGGER.error("Client Aborted due to bad credentials.");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void abortClientDueTo500(Response response) {
+        try {
+            LOGGER.error("Client Aborted due to 500 Internal Server Error.  HTTP Status code: " + response.getResponseBody());
+        } catch (IOException e) {
+            LOGGER.error("Client Aborted due to 500 Internal Server Error.");
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
     public void onHandshakeComplete(List<Cookie> cookies, String clientId) {
         setCookies(cookies);
         setClientId(clientId);
@@ -170,5 +193,15 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     @Override
     public void onReconnectRequest() {
         _fsm.onReconnectRequest();
+    }
+
+    @Override
+    public void onInvalidAuthCredentials(Response response) {
+        _fsm.onInvalidAuthCredentials(response);
+    }
+
+    @Override
+    public void on500Error(Response response) {
+        _fsm.on500Error(response);
     }
 }

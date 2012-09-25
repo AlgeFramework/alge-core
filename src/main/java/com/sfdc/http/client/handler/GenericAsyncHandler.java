@@ -33,10 +33,7 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
     * moment before sending the request down the wire.
     */
     public void startRequestTimer() {
-        System.out.println("GOING TO START STOPWATCH");
-
         stopWatch.start();
-        System.out.println("STARTED STOPWATCH");
     }
 
     @Override

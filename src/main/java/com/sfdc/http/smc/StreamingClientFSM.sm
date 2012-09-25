@@ -29,6 +29,16 @@ Initial
         {
             // Actions go here
         }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 Handshaking
@@ -38,6 +48,17 @@ Handshaking
         {
             // Actions go here
         }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 Handshaken
@@ -46,11 +67,21 @@ Handshaken
              startSubscribe();
          }
 {
-                 onStartingSubscribe(future: Future<Response>) // Transition
-                 Subscribing // End state
-                 {
+         onStartingSubscribe(future: Future<Response>) // Transition
+         Subscribing // End state
+         {
                      // Actions go here
-                 }
+         }
+         onInvalidAuthCredentials(response: Response)
+         ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 Subscribing
@@ -60,6 +91,16 @@ Subscribing
         {
             // Actions go here
         }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 Subscribed
@@ -73,6 +114,16 @@ Subscribed
                  {
                      // Actions go here
                  }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 // now, our http client cannot tell us when a tcp connection was established, so there is no
@@ -86,6 +137,16 @@ Connected
         {
             // Actions go here
         }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 Disconnected
@@ -104,6 +165,16 @@ Disconnected
          {
              // Actions go here
          }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 }
 
 
@@ -118,6 +189,16 @@ Reconnecting
           {
                      // Actions go here
           }
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
 
 }
 
@@ -136,6 +217,16 @@ ClientAborted
     {
         clientAborted();
     }
-    {
-    }
+{
+        onInvalidAuthCredentials(response: Response)
+        ClientAborted
+         {
+           abortClientDueToBadCredentials(response);
+         }
+        on500Error(response: Response)
+        ClientAborted
+         {
+           abortClientDueTo500(response);
+         }
+}
 %%

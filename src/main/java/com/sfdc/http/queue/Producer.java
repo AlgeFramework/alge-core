@@ -24,17 +24,20 @@ public class Producer implements Runnable {
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
     private RequestGeneratorPrototype requestGeneratorPrototype;
     private String instance;
+    private volatile boolean run;
 
 
     public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
+        run = true;
         this.queue = queue;
-        requestGeneratorPrototype = new RequestGeneratorPrototype();
+        //requestGeneratorPrototype = new RequestGeneratorPrototype();
         this.numHandshakes = numHandshakes;
         this.sessionIdReader = sessionIdReader;
         this.instance = instance;
     }
 
     public Producer(BlockingQueue<WorkItem> queue) {
+        run = true;
         this.queue = queue;
     }
 
@@ -70,6 +73,10 @@ public class Producer implements Runnable {
     }
 
     public void publish(WorkItem w) {
+        if (!run) {
+            LOGGER.warn("PRODUCER IS STOPPED BUT ATTEMPT TO PUBLISH WAS MADE");
+            return;
+        }
         if (!queue.add(w)) {
             LOGGER.warn("Failed to publish request to queue");
         }
@@ -83,5 +90,9 @@ public class Producer implements Runnable {
                 LOGGER.warn("Failed to publish request to queue");
             }
         }
+    }
+
+    public void stop() {
+        run = false;
     }
 }

@@ -21,6 +21,26 @@ public class ProducerConsumerQueueConfig {
     public final String instance;
 
 
+    public int getConcurrency() {
+        return concurrency;
+    }
+
+    public int getNumHandshakes() {
+        return numHandshakes;
+    }
+
+    public String getSessionsFile() {
+        return sessionsFile;
+    }
+
+    public String[] getTopics() {
+        return topics;
+    }
+
+    public String getInstance() {
+        return instance;
+    }
+
     public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics, String instance) {
         this.concurrency = concurrency;
         this.numHandshakes = numHandshakes;
@@ -35,7 +55,7 @@ public class ProducerConsumerQueueConfig {
         numHandshakes = Integer.parseInt(p.getProperty("handshake.poc.producer.handshake.count", "10000"));
         sessionsFile = p.getProperty("sessions.file", "NO_SESSIONS_FILE_SPECIFIED_IN_config.properties");
         instance = p.getProperty("instance", "NO_INSTANCE_SPECIFIED_IN_config.properties");
-        String topicList = p.getProperty("topics");
+        String topicList = p.getProperty("channels");
         topics = topicList.split(",");
         System.out.println("max concurrency = " + concurrency);
         System.out.println("handshake count = " + numHandshakes);
@@ -47,6 +67,10 @@ public class ProducerConsumerQueueConfig {
 
     public SessionIdReader getSessionIdReader(String sessionIdFile) throws FileNotFoundException {
         return new SessionIdReader(sessionIdFile);
+    }
+
+    public SessionIdReader getSessionIdReader() throws FileNotFoundException {
+        return new SessionIdReader(sessionsFile);
     }
 
     public Properties loadConfigProperties(String fileName) throws IOException {
