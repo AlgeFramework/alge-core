@@ -39,6 +39,7 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
         NingResponse response = new NingResponse((Response) retVal);
         if (!isResponseSucessful(response)) {
             LOGGER.error("Request failed!");
+            LOGGER.error("Request failed. State is: " + streamingClient.getState() + " Response is: " + response.getResponseBody());
             //TODO:  have more meaningful log line that includes info about which request failed.
             return retVal;
         }
