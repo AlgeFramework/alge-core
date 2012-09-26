@@ -40,6 +40,9 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
         if (!isResponseSucessful(response)) {
             LOGGER.error("Request failed!");
             LOGGER.error("Request failed. State is: " + streamingClient.getState() + " Response is: " + response.getResponseBody());
+            if (statsManager != null) {
+                statsManager.incrementUnsuccessfulBayeuxResponseCount();
+            }
             //TODO:  have more meaningful log line that includes info about which request failed.
             return retVal;
         }
@@ -68,7 +71,7 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
 
         } else {
             if (statsManager != null) {
-                statsManager.getOtherHttp200Count();
+                statsManager.incrementOtherHttp200Count();
             }
             LOGGER.warn("Fell through completed operation recognition! Could not classify response as an expected streaming operation");
 

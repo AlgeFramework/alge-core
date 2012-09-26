@@ -39,7 +39,7 @@ public class StatsReporter implements Runnable {
                 + " subscribes=" + statsManager.getSubscriptionCount()
                 + " connects=" + statsManager.getConnectionCount()
                 + " otherHttp200=" + statsManager.getOtherHttp200Count()
-
+                + " unsuccessfulBayeuxResponses=" + statsManager.getUnsuccessfulBayeuxResponseCount()
         );
     }
 
