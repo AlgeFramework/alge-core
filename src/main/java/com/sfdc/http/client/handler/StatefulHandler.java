@@ -38,12 +38,12 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
     public Object onSuccessfulHttpResponse(Object retVal) throws Exception {
         NingResponse response = new NingResponse((Response) retVal);
         if (!isResponseSucessful(response)) {
-            LOGGER.warn("Request failed!");
+            LOGGER.error("Request failed!");
             //TODO:  have more meaningful log line that includes info about which request failed.
             return retVal;
         }
         String s = getOperationType(response);
-        System.out.println("RESPONSE OPERATION = " + s);
+        LOGGER.debug("RESPONSE OPERATION = " + s);
         if (s.equals("/meta/handshake")) {
             if (statsManager != null) {
                 statsManager.incrementHandshakeCount();

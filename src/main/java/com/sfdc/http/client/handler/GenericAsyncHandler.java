@@ -64,16 +64,14 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
     @Override
     public Object onCompleted() throws Exception {
         stopWatch.stop();
-        System.out.println("STOPPED STOPWATCH");
-
         LOGGER.info("elapsed time: " + stopWatch.getTime());
         stopWatch.reset();
         Response r = builder.build();
         byte[] bytes = r.getResponseBodyAsBytes();
-        System.out.println("status code = " + r.getStatusCode());
-        System.out.println("status text = " + r.getStatusText());
-        System.out.println("output bytes = " + r.getResponseBody());
-        System.out.println("thread name: " + Thread.currentThread().getName());
+        LOGGER.debug("status code = " + r.getStatusCode());
+        LOGGER.debug("status text = " + r.getStatusText());
+        LOGGER.debug("output bytes = " + r.getResponseBody());
+        LOGGER.debug("thread name: " + Thread.currentThread().getName());
         return r;
     }
 

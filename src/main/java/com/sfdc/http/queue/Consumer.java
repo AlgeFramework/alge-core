@@ -85,15 +85,15 @@ public class Consumer implements Runnable {
         WorkItem.Operation operation = work.getOperation();
         switch (operation) {
             case HANDSHAKE:
-                LOGGER.info("Beginning handshake");
+                LOGGER.debug("Beginning handshake");
                 httpClient.streamingHandshake(instance, sessionId, handler);
                 break;
             case CONNECT:
-                LOGGER.info("Beginning connect");
+                LOGGER.debug("Beginning connect");
                 httpClient.streamingConnect(instance, sessionId, cookies, clientID, handler);
                 break;
             case SUBSCRIBE:
-                LOGGER.info("Beginning subscribe");
+                LOGGER.debug("Beginning subscribe");
                 httpClient.streamingSubscribe(instance, sessionId, cookies, clientID, subscriptionChannel, handler);
                 break;
             case DISCONNECT:
