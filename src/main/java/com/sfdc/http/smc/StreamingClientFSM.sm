@@ -39,6 +39,11 @@ Initial
          {
            abortClientDueTo500(response);
          }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
+         }
 }
 
 Handshaking
@@ -58,6 +63,11 @@ Handshaking
         ClientAborted
          {
            abortClientDueTo500(response);
+         }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
          }
 }
 
@@ -82,6 +92,11 @@ Handshaken
          {
            abortClientDueTo500(response);
          }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
+         }
 }
 
 Subscribing
@@ -100,6 +115,11 @@ Subscribing
         ClientAborted
          {
            abortClientDueTo500(response);
+         }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
          }
 }
 
@@ -124,6 +144,11 @@ Subscribed
          {
            abortClientDueTo500(response);
          }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
+         }
 }
 
 // now, our http client cannot tell us when a tcp connection was established, so there is no
@@ -146,6 +171,11 @@ Connected
         ClientAborted
          {
            abortClientDueTo500(response);
+         }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
          }
 }
 
@@ -175,6 +205,11 @@ Disconnected
          {
            abortClientDueTo500(response);
          }
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
+         }
 }
 
 
@@ -199,7 +234,11 @@ Reconnecting
          {
            abortClientDueTo500(response);
          }
-
+         onUnknownClientId(response: Response)
+         ClientAborted
+         {
+           abortClientDueToUnknownClientId(response);
+         }
 }
 
 

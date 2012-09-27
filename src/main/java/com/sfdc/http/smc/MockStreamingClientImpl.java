@@ -94,6 +94,11 @@ public class MockStreamingClientImpl implements StreamingClient {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void abortClientDueToUnknownClientId(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     @Override
     public void onHandshakeComplete(List<Cookie> cookies, String clientId) {
@@ -148,6 +153,11 @@ public class MockStreamingClientImpl implements StreamingClient {
 
     @Override
     public void on500Error(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onUnknownClientId(Response response) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

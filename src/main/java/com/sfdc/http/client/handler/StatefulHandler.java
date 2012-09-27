@@ -44,6 +44,9 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
                 statsManager.incrementUnsuccessfulBayeuxResponseCount();
             }
             //TODO:  have more meaningful log line that includes info about which request failed.
+            if (response.getBayeuxError().equalsIgnoreCase("402::Unknown client")) {
+                streamingClient.onUnknownClientId(response);
+            }
             return retVal;
         }
         String s = getOperationType(response);

@@ -36,6 +36,8 @@ public interface StreamingClient {
 
     void abortClientDueTo500(Response response);
 
+    void abortClientDueToUnknownClientId(Response response);
+
 
     /*
     * TRANSITIONS THAT WE INVOKE ON THE FSM
@@ -56,4 +58,6 @@ public interface StreamingClient {
     void onInvalidAuthCredentials(Response response);
 
     void on500Error(Response response);
+
+    void onUnknownClientId(Response response);
 }

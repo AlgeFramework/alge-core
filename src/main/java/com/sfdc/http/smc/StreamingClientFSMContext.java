@@ -16,6 +16,7 @@ package com.sfdc.http.smc;
 import com.ning.http.client.Cookie;
 import com.ning.http.client.Response;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -112,6 +113,13 @@ public class StreamingClientFSMContext
         return;
     }
 
+    public synchronized void onUnknownClientId(Response response) {
+        _transition = "onUnknownClientId";
+        getState().onUnknownClientId(this, response);
+        _transition = "";
+        return;
+    }
+
     public StreamingClientState getState()
             throws statemap.StateUndefinedException {
         if (_state == null) {
@@ -200,7 +208,19 @@ public class StreamingClientFSMContext
             Default(context);
         }
 
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            Default(context);
+        }
+
         protected void Default(StreamingClientFSMContext context) {
+            if (context.getDebugFlag() == true) {
+                PrintStream str =
+                        context.getDebugStream();
+
+                str.println(
+                        "TRANSITION   : Default");
+            }
+
             throw (
                     new statemap.TransitionUndefinedException(
                             "State: " +
@@ -285,13 +305,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Initial");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Initial.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Initial.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Initial.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Initial.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -300,13 +363,56 @@ public class StreamingClientFSMContext
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Initial");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Initial.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Initial.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Initial.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Initial.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -314,9 +420,110 @@ public class StreamingClientFSMContext
 
         protected void onStartingHandshake(StreamingClientFSMContext context, Future<Response> future) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Initial");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Initial.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Initial.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Initial.onStartingHandshake(Future<Response> future)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Initial.onStartingHandshake(Future<Response> future)");
+            }
+
             context.setState(FSM.Handshaking);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Handshaking.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Handshaking.Entry(context)");
+            }
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Initial");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Initial.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Initial.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Initial.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Initial.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
             return;
         }
 
@@ -338,13 +545,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaking");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaking.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaking.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaking.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Handshaking.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -352,22 +602,166 @@ public class StreamingClientFSMContext
 
         protected void onHandshakeComplete(StreamingClientFSMContext context, List<Cookie> cookies, String clientId) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaking");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaking.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaking.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaking.onHandshakeComplete(List<Cookie> cookies, String clientId)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Handshaking.onHandshakeComplete(List<Cookie> cookies, String clientId)");
+            }
+
             context.setState(FSM.Handshaken);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Handshaken.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Handshaken.Entry(context)");
+            }
             return;
         }
 
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaking");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaking.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaking.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaking.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Handshaking.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaking");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaking.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaking.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaking.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Handshaking.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -398,13 +792,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaken");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaken.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaken.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaken.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Handshaken.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -413,13 +850,56 @@ public class StreamingClientFSMContext
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaken");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaken.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaken.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaken.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Handshaken.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -427,9 +907,110 @@ public class StreamingClientFSMContext
 
         protected void onStartingSubscribe(StreamingClientFSMContext context, Future<Response> future) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaken");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaken.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaken.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaken.onStartingSubscribe(Future<Response> future)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Handshaken.onStartingSubscribe(Future<Response> future)");
+            }
+
             context.setState(FSM.Subscribing);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Subscribing.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Subscribing.Entry(context)");
+            }
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Handshaken");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Handshaken.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Handshaken.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Handshaken.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Handshaken.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
             return;
         }
 
@@ -451,13 +1032,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribing");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribing.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribing.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribing.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Subscribing.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -466,13 +1090,56 @@ public class StreamingClientFSMContext
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribing");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribing.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribing.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribing.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Subscribing.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -480,9 +1147,110 @@ public class StreamingClientFSMContext
 
         protected void onSubscribeComplete(StreamingClientFSMContext context) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribing");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribing.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribing.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribing.onSubscribeComplete()");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Subscribing.onSubscribeComplete()");
+            }
+
             context.setState(FSM.Subscribed);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Subscribed.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Subscribed.Entry(context)");
+            }
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribing");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribing.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribing.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribing.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Subscribing.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
             return;
         }
 
@@ -511,13 +1279,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribed");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribed.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribed.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribed.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Subscribed.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -526,13 +1337,56 @@ public class StreamingClientFSMContext
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribed");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribed.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribed.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribed.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Subscribed.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -540,9 +1394,110 @@ public class StreamingClientFSMContext
 
         protected void onStartingConnect(StreamingClientFSMContext context, Future<Response> future) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribed");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribed.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribed.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribed.onStartingConnect(Future<Response> future)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Subscribed.onStartingConnect(Future<Response> future)");
+            }
+
             context.setState(FSM.Connected);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Connected.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Connected.Entry(context)");
+            }
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Subscribed");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Subscribed.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Subscribed.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Subscribed.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Subscribed.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
             return;
         }
 
@@ -564,13 +1519,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Connected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Connected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Connected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Connected.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Connected.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -578,22 +1576,166 @@ public class StreamingClientFSMContext
 
         protected void onConnectComplete(StreamingClientFSMContext context) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Connected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Connected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Connected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Connected.onConnectComplete()");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Connected.onConnectComplete()");
+            }
+
             context.setState(FSM.Disconnected);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Disconnected.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Disconnected.Entry(context)");
+            }
             return;
         }
 
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Connected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Connected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Connected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Connected.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Connected.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Connected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Connected.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Connected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Connected.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Connected.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -624,13 +1766,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Disconnected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Disconnected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Disconnected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Disconnected.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Disconnected.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -638,22 +1823,108 @@ public class StreamingClientFSMContext
 
         protected void onFinishedScenario(StreamingClientFSMContext context) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Disconnected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Disconnected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Disconnected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Disconnected.onFinishedScenario()");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Disconnected.onFinishedScenario()");
+            }
+
             context.setState(FSM.Done);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Done.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Done.Entry(context)");
+            }
             return;
         }
 
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Disconnected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Disconnected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Disconnected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Disconnected.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Disconnected.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -661,9 +1932,110 @@ public class StreamingClientFSMContext
 
         protected void onReconnectRequest(StreamingClientFSMContext context) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Disconnected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Disconnected.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Disconnected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Disconnected.onReconnectRequest()");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Disconnected.onReconnectRequest()");
+            }
+
             context.setState(FSM.Reconnecting);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Reconnecting.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Reconnecting.Entry(context)");
+            }
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Disconnected");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Disconnected.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Disconnected.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Disconnected.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Disconnected.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
             return;
         }
 
@@ -692,13 +2064,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Reconnecting");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Reconnecting.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Reconnecting.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Reconnecting.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Reconnecting.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -707,13 +2122,56 @@ public class StreamingClientFSMContext
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Reconnecting");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Reconnecting.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Reconnecting.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Reconnecting.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Reconnecting.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -721,9 +2179,110 @@ public class StreamingClientFSMContext
 
         protected void onStartingConnect(StreamingClientFSMContext context, Future<Response> future) {
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Reconnecting");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Reconnecting.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Reconnecting.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Reconnecting.onStartingConnect(Future<Response> future)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("EXIT TRANSITION : FSM.Reconnecting.onStartingConnect(Future<Response> future)");
+            }
+
             context.setState(FSM.Connected);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE ENTRY    : FSM.Connected.Entry(context)");
+            }
+
             (context.getState()).Entry(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER ENTRY     : FSM.Connected.Entry(context)");
+            }
+            return;
+        }
+
+        protected void onUnknownClientId(StreamingClientFSMContext context, Response response) {
+            StreamingClient ctxt = context.getOwner();
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.Reconnecting");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.Reconnecting.Exit(context)");
+            }
+
+            (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.Reconnecting.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.Reconnecting.onUnknownClientId(Response response)");
+            }
+
+            context.clearState();
+            try {
+                ctxt.abortClientDueToUnknownClientId(response);
+            } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.Reconnecting.onUnknownClientId(Response response)");
+                }
+
+                context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
+                (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
+            }
+
             return;
         }
 
@@ -774,13 +2333,56 @@ public class StreamingClientFSMContext
         protected void on500Error(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.ClientAborted");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.ClientAborted.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.ClientAborted.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.ClientAborted.on500Error(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueTo500(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.ClientAborted.on500Error(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;
@@ -789,13 +2391,56 @@ public class StreamingClientFSMContext
         protected void onInvalidAuthCredentials(StreamingClientFSMContext context, Response response) {
             StreamingClient ctxt = context.getOwner();
 
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("LEAVING STATE   : FSM.ClientAborted");
+            }
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("BEFORE EXIT     : FSM.ClientAborted.Exit(context)");
+            }
+
             (context.getState()).Exit(context);
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("AFTER EXIT      : FSM.ClientAborted.Exit(context)");
+            }
+
+            if (context.getDebugFlag() == true) {
+                PrintStream str = context.getDebugStream();
+
+                str.println("ENTER TRANSITION: FSM.ClientAborted.onInvalidAuthCredentials(Response response)");
+            }
+
             context.clearState();
             try {
                 ctxt.abortClientDueToBadCredentials(response);
             } finally {
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("EXIT TRANSITION : FSM.ClientAborted.onInvalidAuthCredentials(Response response)");
+                }
+
                 context.setState(FSM.ClientAborted);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("BEFORE ENTRY    : FSM.ClientAborted.Entry(context)");
+                }
+
                 (context.getState()).Entry(context);
+
+                if (context.getDebugFlag() == true) {
+                    PrintStream str = context.getDebugStream();
+
+                    str.println("AFTER ENTRY     : FSM.ClientAborted.Entry(context)");
+                }
             }
 
             return;

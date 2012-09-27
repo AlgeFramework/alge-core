@@ -33,3 +33,6 @@ mvn install:install-file
 TODO: implement a client abstraction that allows for a handler to store session ids and usernames and appropriately log them.
 TODO:  implement state management for clients
 TODO:  more readme material.
+TODO:  BUG: if connect receives an unknown client error, the client goes into the Connected state.
+SEVERE: Request failed. State is: FSM.Connected Response is: [{"channel":"/meta/connect","clientId":"1xe7ep1w4t7b6797gccgddoj4c2","advice":{"reconnect":"handshake","interval":500},"error":"402::Unknown client","successful":false}]
+

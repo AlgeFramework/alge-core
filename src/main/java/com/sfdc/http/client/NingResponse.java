@@ -115,6 +115,7 @@ public class NingResponse implements com.ning.http.client.Response {
         return response.hasResponseBody();
     }
 
+    //todo: remove the boiler plate code in the getClientId(), getChannel(), and friends.
     public String getClientId() throws Exception {
         String responseBody = null;
         try {
@@ -188,6 +189,23 @@ public class NingResponse implements com.ning.http.client.Response {
         }
         return Boolean.parseBoolean(findTokeninJSonArray(rootNode, "successful"));
 
+    }
+
+    public String getBayeuxError() throws Exception {
+        String responseBody = null;
+        try {
+            responseBody = response.getResponseBody();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(responseBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return findTokeninJSonArray(rootNode, "error");
     }
 
     /**
