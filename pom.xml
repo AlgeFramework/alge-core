@@ -96,7 +96,7 @@
                     <executable>java</executable>
                     <arguments>
                         <argument>-Xms512m</argument>
-                        <argument>-Xmx512m</argument>
+                        <argument>-Xmx2048m</argument>
                         <argument>-XX:+PrintGCTimeStamps</argument>
                         <argument>-XX:+PrintGCDetails</argument>
                         <argument>-Xloggc:streaming_client_gc.log</argument>
