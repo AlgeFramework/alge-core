@@ -52,28 +52,29 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
             if (statsManager != null) {
                 statsManager.incrementHandshakeCount();
             }
-            System.out.println("handshake complete - calling onHandshakeComplete ...");
+            LOGGER.info(response.getClientId() + ":handshake:complete");
             streamingClient.onHandshakeComplete(response.getCookies(), response.getClientId());
 
         } else if (s.equals("/meta/subscribe")) {
             if (statsManager != null) {
                 statsManager.incrementSubscriptionCount();
             }
-            System.out.println("subscription complete - calling onSubscribeComplete ...");
+            LOGGER.info(response.getClientId() + ":subscribe:complete");
             streamingClient.onSubscribeComplete();
 
         } else if (s.equals("/meta/connect")) {
             if (statsManager != null) {
                 statsManager.incrementConnectCount();
             }
-            System.out.println("connect complete - calling onConnectComplete ...");
+            LOGGER.info(response.getClientId() + ":connect:complete");
             streamingClient.onConnectComplete();
 
         } else {
             if (statsManager != null) {
                 statsManager.incrementOtherHttp200Count();
             }
-            LOGGER.warn("Fell through completed operation recognition! Could not classify response as an expected streaming operation");
+            LOGGER.error("Fell through completed operation recognition! Could not classify response as an expected streaming operation");
+            LOGGER.error(response.getClientId() + ":unknown200statuscode:unknown");
 
         }
         return retVal;
