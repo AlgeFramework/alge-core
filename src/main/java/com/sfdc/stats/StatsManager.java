@@ -57,11 +57,11 @@ public class StatsManager {
     }
 
     public int getSubscriptionCount() {
-        return completed_handshakes_count.get();
+        return completed_subscribes_count.get();
     }
 
     public int getConnectionCount() {
-        return completed_handshakes_count.get();
+        return completed_connects_count.get();
     }
 
     public int getOtherHttp200Count() {

@@ -1,3 +1,29 @@
+System Settings:
+It's critical to have a godo file descriptor limit:
+sysctl -w fs.file-max=250000
+
+psrinivasan@psrinivasan-wsl1:~$ ulimit -n
+8192
+psrinivasan@psrinivasan-wsl1:~$ ulimit -Hn
+100000
+psrinivasan@psrinivasan-wsl1:~$ ulimit -n 99999
+
+in /etc/security/limits.conf
+
+psrinivasan soft nofile 200000
+psrinivasan hard nofile 200000
+
+And to have a god enough port range:
+sysctl net.ipv4.ip_local_port_range
+
+and set to
+echo 1024 65535 > /proc/sys/net/ipv4/ip_local_port_range
+or
+sudo sysctl -w net.ipv4.ip_local_port_range="1024 64000"
+
+and to persist - type into /etc/sysctl.conf
+net.ipv4.ip_local_port_range = 1024 65535
+
 In order to run the handshakes stress test, use the target
 
 mvn package

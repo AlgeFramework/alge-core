@@ -160,7 +160,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     @Override
     public void abortClientDueTo500(Response response) {
         try {
-            LOGGER.error("Client Aborted due to 500 Internal Server Error.  HTTP Status code: " + response.getResponseBody());
+            LOGGER.error("Client Aborted due to 500 Internal Server Error.  HTTP Status code: " + response.getStatusCode() + " Body: " + response.getResponseBody());
         } catch (IOException e) {
             LOGGER.error("Client Aborted due to 500 Internal Server Error.");
             e.printStackTrace();
@@ -171,7 +171,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     @Override
     public void abortClientDueToUnknownClientId(Response response) {
         try {
-            LOGGER.error("Client Aborted due to Unknown Client ID Response.  HTTP Status code: " + response.getResponseBody());
+            LOGGER.error("Client Aborted due to Unknown Client ID Response.  HTTP Status code: " + response.getStatusCode() + " Body: " + response.getResponseBody());
         } catch (IOException e) {
             LOGGER.error("Client Aborted due to Unknown Client ID Response");
             e.printStackTrace();
