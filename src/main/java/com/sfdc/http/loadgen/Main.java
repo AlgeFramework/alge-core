@@ -19,7 +19,7 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        RequestGenerator rg = new RequestGenerator();
+        RequestGenerator rg = new RequestGenerator("src/main/resources/config.properties");
         Thread requestsThread = new Thread(rg);
         requestsThread.start();
         Properties p = loadConfigs("src/main/resources/config.properties");

@@ -27,11 +27,10 @@ public class RequestGenerator implements Runnable {
     private volatile boolean run;
 
 
-    public RequestGenerator() {
+    public RequestGenerator(String config) {
         run = true;
         try {
-            //todo: parameterize location of props file.
-            config = new ProducerConsumerQueueConfig("src/main/resources/config.properties");
+            this.config = new ProducerConsumerQueueConfig(config);
         } catch (IOException e) {
             LOGGER.error("FATAL:  Failed to load config.properties ... exiting.");
             e.printStackTrace();
@@ -39,7 +38,7 @@ public class RequestGenerator implements Runnable {
             System.exit(1);
         }
         try {
-            pcQueue = new ProducerConsumerQueue(config);
+            pcQueue = new ProducerConsumerQueue(this.config);
         } catch (Exception e) {
             LOGGER.error("FATAL:  Failed to initialize producer/consumer subsystem ... exiting.");
             e.printStackTrace();
@@ -47,7 +46,7 @@ public class RequestGenerator implements Runnable {
             System.exit(1);
         }
         try {
-            sessionReader = config.getSessionIdReader();
+            sessionReader = this.config.getSessionIdReader();
         } catch (FileNotFoundException e) {
             LOGGER.error("FATAL:  Failed to load session id file ... exiting.");
             e.printStackTrace();
