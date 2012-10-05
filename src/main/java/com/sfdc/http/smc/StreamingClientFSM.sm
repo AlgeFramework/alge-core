@@ -44,6 +44,11 @@ Initial
          {
            abortClientDueToUnknownClientId(response);
          }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
+         }
 }
 
 Handshaking
@@ -68,6 +73,11 @@ Handshaking
          ClientAborted
          {
            abortClientDueToUnknownClientId(response);
+         }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
          }
 }
 
@@ -97,6 +107,11 @@ Handshaken
          {
            abortClientDueToUnknownClientId(response);
          }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
+         }
 }
 
 Subscribing
@@ -120,6 +135,11 @@ Subscribing
          ClientAborted
          {
            abortClientDueToUnknownClientId(response);
+         }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
          }
 }
 
@@ -149,6 +169,11 @@ Subscribed
          {
            abortClientDueToUnknownClientId(response);
          }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
+         }
 }
 
 // now, our http client cannot tell us when a tcp connection was established, so there is no
@@ -176,6 +201,11 @@ Connected
          ClientAborted
          {
            abortClientDueToUnknownClientId(response);
+         }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
          }
 }
 
@@ -210,6 +240,11 @@ Disconnected
          {
            abortClientDueToUnknownClientId(response);
          }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
+         }
 }
 
 
@@ -238,6 +273,11 @@ Reconnecting
          ClientAborted
          {
            abortClientDueToUnknownClientId(response);
+         }
+        onOtherHttpErrorCode(response: Response)
+        ClientAborted
+         {
+           abortClientDueToOtherHttpErrorCode(response);
          }
 }
 

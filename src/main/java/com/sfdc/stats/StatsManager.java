@@ -18,6 +18,7 @@ public class StatsManager {
     private AtomicInteger completed_connects_count;
     private AtomicInteger other_http200_operations_count;
     private AtomicInteger unsuccessful_bayeux_response;
+    private AtomicInteger other_http_error_count;
 
 
     public static StatsManager getInstance() {
@@ -30,6 +31,7 @@ public class StatsManager {
         completed_connects_count = new AtomicInteger(0);
         other_http200_operations_count = new AtomicInteger(0);
         unsuccessful_bayeux_response = new AtomicInteger(0);
+        other_http_error_count = new AtomicInteger(0);
     }
 
     public int incrementHandshakeCount() {
@@ -52,6 +54,10 @@ public class StatsManager {
         return unsuccessful_bayeux_response.incrementAndGet();
     }
 
+    public int incrementOtherHttpErrorResponseCount() {
+        return other_http_error_count.incrementAndGet();
+    }
+
     public int getHandshakeCount() {
         return completed_handshakes_count.get();
     }
@@ -70,5 +76,9 @@ public class StatsManager {
 
     public int getUnsuccessfulBayeuxResponseCount() {
         return unsuccessful_bayeux_response.get();
+    }
+
+    public int getOtherHttpErrorResponseCount() {
+        return other_http_error_count.incrementAndGet();
     }
 }

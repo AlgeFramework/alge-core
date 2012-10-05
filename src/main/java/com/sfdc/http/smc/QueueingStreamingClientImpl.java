@@ -179,6 +179,16 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     }
 
+    @Override
+    public void abortClientDueToOtherHttpErrorCode(Response response) {
+        try {
+            LOGGER.error("Client Aborted due to Unknown HTTP Error Response.  HTTP Status code: " + response.getStatusCode() + " Body: " + response.getResponseBody());
+        } catch (IOException e) {
+            LOGGER.error("Client Aborted due to Unknown HTTP Error Response");
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onHandshakeComplete(List<Cookie> cookies, String clientId) {
@@ -220,5 +230,10 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     @Override
     public void onUnknownClientId(Response response) {
         _fsm.onUnknownClientId(response);
+    }
+
+    @Override
+    public void onOtherHttpErrorCode(Response response) {
+        _fsm.onOtherHttpErrorCode(response);
     }
 }

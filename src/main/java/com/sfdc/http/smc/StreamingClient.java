@@ -38,6 +38,7 @@ public interface StreamingClient {
 
     void abortClientDueToUnknownClientId(Response response);
 
+    void abortClientDueToOtherHttpErrorCode(Response response);
 
     /*
     * TRANSITIONS THAT WE INVOKE ON THE FSM
@@ -60,4 +61,8 @@ public interface StreamingClient {
     void on500Error(Response response);
 
     void onUnknownClientId(Response response);
+
+    void onOtherHttpErrorCode(Response response);
+
+
 }

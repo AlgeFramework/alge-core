@@ -98,11 +98,10 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
                 streamingClient.onInvalidAuthCredentials(response);
                 break;
             case 500:
-                //Oooo.  No saying what happened here.
-                //Go to Failed state.
+                streamingClient.on500Error(response);
                 break;
             default:
-                //Surprise, Go to failed state
+                streamingClient.onOtherHttpErrorCode(response);
                 break;
         }
         return retVal;

@@ -40,6 +40,8 @@ public class StatsReporter implements Runnable {
                 + " connects=" + statsManager.getConnectionCount()
                 + " otherHttp200=" + statsManager.getOtherHttp200Count()
                 + " unsuccessfulBayeuxResponses=" + statsManager.getUnsuccessfulBayeuxResponseCount()
+                + " otherHttpErrors=" + statsManager.getOtherHttpErrorResponseCount()
+
         );
     }
 

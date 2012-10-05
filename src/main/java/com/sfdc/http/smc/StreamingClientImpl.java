@@ -165,6 +165,11 @@ public class StreamingClientImpl implements StreamingClient {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void abortClientDueToOtherHttpErrorCode(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /*
      *
      * FSM RELATED STATE TRANSITIONS
@@ -218,6 +223,11 @@ public class StreamingClientImpl implements StreamingClient {
 
     @Override
     public void onUnknownClientId(Response response) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onOtherHttpErrorCode(Response response) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }
