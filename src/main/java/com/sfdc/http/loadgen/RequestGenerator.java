@@ -38,7 +38,7 @@ public class RequestGenerator implements Runnable {
             System.exit(1);
         }
         try {
-            pcQueue = new ProducerConsumerQueue(this.config);
+            pcQueue = new ProducerConsumerQueue(this.config).initializeConsumer();
         } catch (Exception e) {
             LOGGER.error("FATAL:  Failed to initialize producer/consumer subsystem ... exiting.");
             e.printStackTrace();

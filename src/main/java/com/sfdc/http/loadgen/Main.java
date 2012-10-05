@@ -31,6 +31,7 @@ public class Main {
         }
 
         try {
+            //todo: running time of the load generator - needs to be parameterized
             Thread.sleep(600 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();

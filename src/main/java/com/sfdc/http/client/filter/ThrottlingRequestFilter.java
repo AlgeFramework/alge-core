@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * @author psrinivasan
  *         Date: 8/31/12
  *         Time: 6:33 PM
- *         Throttling RequestFilter does NOT throttle.  Throttling happens at the Consumer.
+ *         Throttling RequestFilter does NOT throttle.  Throttling happens at the StreamingConsumer.
  *         This request filter is still useful to gather stats such as the timestamp when a request
  *         was sent to the server.
  *         We can't store pre request/response info here, since it appears only a single instance

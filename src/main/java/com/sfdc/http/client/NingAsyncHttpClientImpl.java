@@ -12,8 +12,17 @@ import com.sfdc.http.client.filter.ThrottlingRequestFilter;
 import com.sfdc.http.client.filter.ThrottlingResponseFilter;
 import com.sfdc.http.client.handler.GenericAsyncHandler;
 import com.sfdc.http.client.handler.ThrottlingGenericAsyncHandler;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -28,6 +37,11 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     private static final int MAX_CONNECTIONS_TOTAL = 100000;
     private static final int MAX_CONNECTIONS_PER_HOST = 100000;
     private Semaphore semaphore;
+    private static final String ENV_START =
+            "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' "
+                    + "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
+                    "xmlns:urn='urn:partner.soap.sforce.com'><soapenv:Body>";
+    private static final String ENV_END = "</soapenv:Body></soapenv:Envelope>";
 
     public NingAsyncHttpClientImpl(Semaphore concurrencyPermit) {
         super(new AsyncHttpClientConfig.Builder()
@@ -76,6 +90,25 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
+        }
+        return future;
+    }
+
+    public Future<Response> login(String instance, String userName, String password) {
+        return login(instance, userName, password, returnAppropriateHandler());
+    }
+
+    public Future<Response> login(String instance, String userName, String password, AsyncHandler asyncHandler) {
+        ListenableFuture<Response> future = null;
+        try {
+            future = preparePost(instance + SfdcConstants.SERVICES_SOAP_PARTNER_ENDPOINT)
+                    .addHeader("Content-Type", "text/xml")
+                    .addHeader("SOAPAction", "''")
+                    .addHeader("PrettyPrint", "Yes")
+                    .setBody(soapXmlForLogin(userName, password))
+                    .execute(asyncHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return future;
     }
@@ -173,5 +206,98 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
 
     private AsyncHandler returnAppropriateHandler() {
         return (semaphore == null) ? new GenericAsyncHandler() : new ThrottlingGenericAsyncHandler(semaphore);
+    }
+
+    private byte[] soapXmlForLogin(String username, String password)
+            throws UnsupportedEncodingException {
+        return (ENV_START +
+                "  <urn:login>" +
+                "    <urn:username>" + username + "</urn:username>" +
+                "    <urn:password>" + password + "</urn:password>" +
+                "  </urn:login>" +
+                ENV_END).getBytes("UTF-8");
+    }
+
+    /**
+     * @param soapLoginResponse
+     * @return string[0] is the session id
+     *         string[1] is the instance url
+     */
+    public String[] getLoginCredentials(String soapLoginResponse) throws IOException, UnsupportedEncodingException, SAXException {
+
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
+        SAXParser saxParser = null;
+        try {
+            saxParser = spf.newSAXParser();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+
+        LoginResponseParser parser = new LoginResponseParser();
+        saxParser.parse(new ByteArrayInputStream(
+                soapLoginResponse.getBytes("UTF-8")), parser);
+
+        if (parser.sessionId == null || parser.serverUrl == null) {
+            System.out.println("Login Failed!\n" + soapLoginResponse);
+            return null;
+        }
+        URL soapEndpoint = new URL(parser.serverUrl);
+        StringBuilder endpoint = new StringBuilder()
+                .append(soapEndpoint.getProtocol())
+                .append("://")
+                .append(soapEndpoint.getHost());
+
+        if (soapEndpoint.getPort() > 0) endpoint.append(":")
+                .append(soapEndpoint.getPort());
+        return new String[]{parser.sessionId, endpoint.toString()};
+
+    }
+
+    private static class LoginResponseParser extends DefaultHandler {
+
+        private boolean inSessionId;
+        private String sessionId;
+
+        private boolean inServerUrl;
+        private String serverUrl;
+
+        @Override
+
+        public void characters(char[] ch, int start, int length) {
+            if (inSessionId) sessionId = new String(ch, start, length);
+            if (inServerUrl) serverUrl = new String(ch, start, length);
+        }
+
+        @Override
+
+        public void endElement(String uri, String localName, String qName) {
+            if (localName != null) {
+                if (localName.equals("sessionId")) {
+                    inSessionId = false;
+                }
+
+                if (localName.equals("serverUrl")) {
+                    inServerUrl = false;
+                }
+            }
+        }
+
+        @Override
+
+        public void startElement(String uri, String localName,
+                                 String qName, Attributes attributes) {
+            if (localName != null) {
+                if (localName.equals("sessionId")) {
+                    inSessionId = true;
+                }
+
+                if (localName.equals("serverUrl")) {
+                    inServerUrl = true;
+                }
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.sfdc.http.smc;
 
-import com.sfdc.http.queue.Consumer;
 import com.sfdc.http.queue.Producer;
+import com.sfdc.http.queue.StreamingConsumer;
 import com.sfdc.http.queue.WorkItem;
 import com.sfdc.http.util.SoapLoginUtil;
 import junit.framework.TestCase;
@@ -19,7 +19,7 @@ public class QueueingStreamingClientImplTest extends TestCase {
     private String sessionId;
     private String instance;
     private Producer producer;
-    private Consumer consumer;
+    private StreamingConsumer streamingConsumer;
     private Thread consumerThread;
 
     public void setUp() throws Exception {
@@ -29,10 +29,10 @@ public class QueueingStreamingClientImplTest extends TestCase {
         LinkedBlockingDeque<WorkItem> queue = new LinkedBlockingDeque<WorkItem>();
         producer = new Producer(queue);
         Semaphore numConcurrentClients = new Semaphore(2);
-        consumer = new Consumer(queue, numConcurrentClients);
+        streamingConsumer = new StreamingConsumer(queue, numConcurrentClients);
         String[] channels = {"/topic/accountTopic", "/topic/c1Topic"};
         streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels);
-        consumerThread = new Thread(consumer);
+        consumerThread = new Thread(streamingConsumer);
         consumerThread.start();
 
     }

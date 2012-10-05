@@ -1,11 +1,8 @@
 package com.sfdc.http.queue;
 
-import com.sfdc.http.loadgen.RequestGeneratorPrototype;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import poc.SessionIdReader;
 
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -15,43 +12,34 @@ import java.util.concurrent.BlockingQueue;
  *         Pushes requests into the work queue for consumption by
  *         consumers.
  */
-public class Producer implements Runnable {
+public class Producer {
+//    public class Producer implements Runnable {
 
     private final BlockingQueue<WorkItem> queue;
     private static final Logger LOGGER = LoggerFactory.getLogger(Producer.class);
-    private int numHandshakes;
-    private SessionIdReader sessionIdReader;
+    //private int numHandshakes;
+    //private SessionIdReader sessionIdReader;
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
-    private RequestGeneratorPrototype requestGeneratorPrototype;
-    private String instance;
+    //private RequestGeneratorPrototype requestGeneratorPrototype;
+    //private String instance;
     private volatile boolean run;
 
 
-    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
+/*    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
         run = true;
         this.queue = queue;
         //requestGeneratorPrototype = new RequestGeneratorPrototype();
-        this.numHandshakes = numHandshakes;
-        this.sessionIdReader = sessionIdReader;
-        this.instance = instance;
-    }
+        //this.numHandshakes = numHandshakes;
+        //this.sessionIdReader = sessionIdReader;
+        //this.instance = instance;
+    }*/
 
     public Producer(BlockingQueue<WorkItem> queue) {
         run = true;
         this.queue = queue;
     }
 
-    /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p/>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
-     */
+    /*
     @Override
     public void run() {
         //publish(numHandshakes);
@@ -61,16 +49,16 @@ public class Producer implements Runnable {
             e.printStackTrace();
         }
         LOGGER.info("Producer is done.  exiting");
-    }
+    }*/
 
-    public void publish(int num_requests) {
+/*    public void publish(int num_requests) {
         for (int i = 0; i < num_requests; i++) {
             boolean result = queue.add(requestGeneratorPrototype.generateHandshakeWorkItem());
             if (!result) {
                 LOGGER.warn("Failed to publish request to queue");
             }
         }
-    }
+    }*/
 
     public void publish(WorkItem w) {
         if (!run) {
@@ -82,7 +70,7 @@ public class Producer implements Runnable {
         }
     }
 
-    public void publishFromSessionIdFile() throws IOException {
+/*    public void publishFromSessionIdFile() throws IOException {
         String sessionId;
         while ((sessionId = sessionIdReader.getOneSessionId()) != null) {
             boolean result = queue.add(requestGeneratorPrototype.generateHandshakeWorkItem(sessionId, instance));
@@ -90,7 +78,7 @@ public class Producer implements Runnable {
                 LOGGER.warn("Failed to publish request to queue");
             }
         }
-    }
+    }*/
 
     public void stop() {
         run = false;

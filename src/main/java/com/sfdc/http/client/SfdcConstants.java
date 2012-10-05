@@ -26,4 +26,6 @@ public interface SfdcConstants {
     String CONNECT = "/connect";
     String SUBSCRIBE = "/subscribe";
     String DISCONNECT = "/disconnect";
+    String SERVICES_SOAP_PARTNER_ENDPOINT = "/services/Soap/u/22.0/";
+
 }

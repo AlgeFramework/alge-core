@@ -15,7 +15,7 @@ import java.util.concurrent.Semaphore;
 public class ProducerConsumerQueue implements Runnable {
     private final ProducerConsumerQueueConfig config;
     private final Producer producer;
-    private final Consumer consumer;
+    private ConsumerInterface consumer;
     private final LinkedBlockingDeque<WorkItem> queue;
     private final Semaphore concurrencyPermit;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueue.class);
@@ -26,9 +26,13 @@ public class ProducerConsumerQueue implements Runnable {
         this.config = config;
         queue = new LinkedBlockingDeque<WorkItem>();
         SessionIdReader sessionIdReader = config.getSessionIdReader(config.sessionsFile);
-        producer = new Producer(queue, config.numHandshakes, sessionIdReader, config.instance);
+        producer = new Producer(queue);
         concurrencyPermit = new Semaphore(config.concurrency);
-        consumer = new Consumer(queue, concurrencyPermit);
+    }
+
+    public ProducerConsumerQueue initializeConsumer() {
+        consumer = new StreamingConsumer(queue, concurrencyPermit);
+        return this;
     }
 
     public ProducerConsumerQueueConfig getConfig() {
@@ -39,7 +43,7 @@ public class ProducerConsumerQueue implements Runnable {
         return producer;
     }
 
-    public Consumer getConsumer() {
+    public ConsumerInterface getConsumer() {
         return consumer;
     }
 

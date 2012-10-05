@@ -6,9 +6,11 @@ import com.sfdc.http.util.SoapLoginUtil;
 import junit.framework.TestCase;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 
@@ -23,10 +25,15 @@ public class NingAsyncHttpClientImplTest extends TestCase {
     private String instance;
     private NingAsyncHttpClientImpl asyncHttpClient_base;
     private NingAsyncHttpClientImpl asyncHttpClient_concurrencyControl_base;
+    private final String userName = "admin@ist8.streaming.20.systest.org501";
+    private final String password = "123456";
+    private final String loginInstanceUrl = "https://ist8.soma.salesforce.com/";
 
     public void setUp() throws Exception {
-        String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8", "123456", "https://ist6.soma.salesforce.com/");
+        //String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8", "123456", "https://ist6.soma.salesforce.com/");
         //String[] credentials = SoapLoginUtil.login("dpham@178.private.streaming.20.org2006", "123456", "https://ist6.soma.salesforce.com/");
+        String[] credentials = SoapLoginUtil.login("admin@ist8.streaming.20.systest.org501", "123456", "https://ist8.soma.salesforce.com/");
+
 
         sessionId = credentials[0];
         instance = credentials[1];
@@ -36,6 +43,25 @@ public class NingAsyncHttpClientImplTest extends TestCase {
     }
 
     public void tearDown() throws Exception {
+
+    }
+
+    public void testLogin_no_concurrency_control() throws Exception {
+        login_base_test(asyncHttpClient_base);
+    }
+
+    public void testLogin_concurrency_control() throws Exception {
+        login_base_test(asyncHttpClient_concurrencyControl_base);
+    }
+
+    public void login_base_test(NingAsyncHttpClientImpl asyncHttpClient) throws ExecutionException, InterruptedException, IOException, SAXException {
+        Future<Response> future = asyncHttpClient.login(loginInstanceUrl, userName, password);
+        Response response = future.get();
+        String[] credentials = asyncHttpClient.getLoginCredentials(response.getResponseBody());
+        assertEquals("https://ist8.soma.salesforce.com", credentials[1]);
+        assertNotNull(credentials[0]);
+        System.out.println("session id " + credentials[0] + " instance " + credentials[1]);
+        //System.out.println(response.getResponseBody());
 
     }
 
