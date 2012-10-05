@@ -41,6 +41,8 @@ public class StatsReporter implements Runnable {
                 + " otherHttp200=" + statsManager.getOtherHttp200Count()
                 + " unsuccessfulBayeuxResponses=" + statsManager.getUnsuccessfulBayeuxResponseCount()
                 + " otherHttpErrors=" + statsManager.getOtherHttpErrorResponseCount()
+                + " Http500Errors=" + statsManager.getHttp500Count()
+
 
         );
     }

@@ -98,9 +98,15 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
                 streamingClient.onInvalidAuthCredentials(response);
                 break;
             case 500:
+                if (statsManager != null) {
+                    statsManager.incrementHttp500Count();
+                }
                 streamingClient.on500Error(response);
                 break;
             default:
+                if (statsManager != null) {
+                    statsManager.incrementOtherHttpErrorResponseCount();
+                }
                 streamingClient.onOtherHttpErrorCode(response);
                 break;
         }
