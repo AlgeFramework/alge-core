@@ -23,7 +23,7 @@ public class ProducerConsumerQueue implements Runnable {
     private final Semaphore concurrencyPermit;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueue.class);
     private Thread consumerThread;
-    public static final String QUEUE_STATS_METRIC = "Queue-Stats";
+    public static final String QUEUE_STATS_METRIC = "Queue-Num-Elements";
 
 
     public ProducerConsumerQueue(ProducerConsumerQueueConfig config) throws Exception {

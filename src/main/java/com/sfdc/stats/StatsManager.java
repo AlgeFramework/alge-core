@@ -48,7 +48,11 @@ public class StatsManager {
     }
 
     public void incrementCustomStats(String metric) {
-        customStats.get(metric).incrementAndGet();
+        int value = customStats.get(metric).incrementAndGet();
+    }
+
+    public void decrementCustomStats(String metric) {
+        int value = customStats.get(metric).decrementAndGet();
     }
 
     public int incrementHandshakeCount() {

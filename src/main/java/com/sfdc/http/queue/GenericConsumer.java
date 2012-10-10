@@ -62,7 +62,7 @@ public abstract class GenericConsumer implements ConsumerInterface {
                 WorkItem work = queue.poll(2, TimeUnit.SECONDS);
                 if (work != null) {
                     if (collectQueueStats && statsManager != null) {
-                        statsManager.incrementCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
+                        statsManager.decrementCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
                     }
                     processWorkItem(work);
                 } else {

@@ -33,7 +33,7 @@ public class QueueingStreamingClientImplTest extends TestCase {
         Semaphore numConcurrentClients = new Semaphore(2);
         streamingConsumer = new StreamingConsumer(queue, numConcurrentClients, true, StatsManager.getInstance());
         String[] channels = {"/topic/accountTopic", "/topic/c1Topic"};
-        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, 1);
+        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, new Semaphore(1));
         consumerThread = new Thread(streamingConsumer);
         consumerThread.start();
 

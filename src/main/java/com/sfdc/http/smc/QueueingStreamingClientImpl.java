@@ -61,14 +61,14 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.clientId = clientId;
     }
 
-    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels, int maxHandshakeConcurrency) {
+    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels, Semaphore handshakeConcurrencyPermit) {
         this.sessionId = sessionId;
         this.instance = instance;
         this.clientId = clientId;
         this.handshakeProducer = handshakeProducer;
         this.defaultProducer = defaultProducer;
         this.channels = channels;
-        handshakeConcurrencyPermit = new Semaphore(maxHandshakeConcurrency);
+        this.handshakeConcurrencyPermit = handshakeConcurrencyPermit;
         //_fsm = new StreamingClientFSMContext(this);
         //_fsm = new StreamingClientHandshakeFSMContext(this);
         _fsm = new StreamingClientSubscribeFSMContext(this);
@@ -117,6 +117,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         Producer p = (handshakeProducer == null) ? defaultProducer : handshakeProducer;
         try {
             handshakeConcurrencyPermit.acquire();
+            System.out.println("Acquired Hansdshake Permit! - remaining permits " + handshakeConcurrencyPermit.availablePermits());
         } catch (InterruptedException e) {
             LOGGER.warn("exception thrown while waiting for handshake concurrency semaphore.  Actual handshake concurrency may not be what you expect.");
             e.printStackTrace();
