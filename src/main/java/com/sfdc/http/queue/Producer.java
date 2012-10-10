@@ -1,5 +1,6 @@
 package com.sfdc.http.queue;
 
+import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,8 @@ public class Producer {
     //private RequestGeneratorPrototype requestGeneratorPrototype;
     //private String instance;
     private volatile boolean run;
+    private final boolean collectQueueStats;
+    private final StatsManager statsManager;
 
 
 /*    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
@@ -34,9 +37,19 @@ public class Producer {
         //this.instance = instance;
     }*/
 
-    public Producer(BlockingQueue<WorkItem> queue) {
+    public Producer(BlockingQueue<WorkItem> queue, boolean collectQueueStats, StatsManager statsManager) {
+        this.statsManager = statsManager;
         run = true;
         this.queue = queue;
+        this.collectQueueStats = collectQueueStats;
+
+        if (collectQueueStats && statsManager != null) {
+            initializeQueueStatsCollection();
+        }
+    }
+
+    private void initializeQueueStatsCollection() {
+        statsManager.createCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
     }
 
     /*
@@ -67,6 +80,10 @@ public class Producer {
         }
         if (!queue.add(w)) {
             LOGGER.warn("Failed to publish request to queue");
+        } else {
+            if (collectQueueStats && statsManager != null) {
+                statsManager.incrementCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
+            }
         }
     }
 

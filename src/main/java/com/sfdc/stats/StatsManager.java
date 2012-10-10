@@ -3,6 +3,7 @@ package com.sfdc.stats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -20,6 +21,7 @@ public class StatsManager {
     private AtomicInteger unsuccessful_bayeux_response;
     private AtomicInteger other_http_error_count;
     private AtomicInteger http500_error_count;
+    private final ConcurrentHashMap<String, AtomicInteger> customStats;
 
 
     public static StatsManager getInstance() {
@@ -34,6 +36,19 @@ public class StatsManager {
         unsuccessful_bayeux_response = new AtomicInteger(0);
         other_http_error_count = new AtomicInteger(0);
         http500_error_count = new AtomicInteger(0);
+        customStats = new ConcurrentHashMap<String, AtomicInteger>();
+    }
+
+    public ConcurrentHashMap<String, AtomicInteger> getCustomStatsHash() {
+        return customStats;
+    }
+
+    public void createCustomStats(String metric) {
+        customStats.putIfAbsent(metric, new AtomicInteger(0));
+    }
+
+    public void incrementCustomStats(String metric) {
+        customStats.get(metric).incrementAndGet();
     }
 
     public int incrementHandshakeCount() {
@@ -62,6 +77,10 @@ public class StatsManager {
 
     public int incrementOtherHttpErrorResponseCount() {
         return other_http_error_count.incrementAndGet();
+    }
+
+    public int getCustomStats(String metric) {
+        return customStats.get(metric).get();
     }
 
     public int getHandshakeCount() {

@@ -1,6 +1,7 @@
 package com.sfdc.http.queue;
 
 import com.sfdc.http.client.NingAsyncHttpClientImpl;
+import com.sfdc.stats.StatsManager;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -16,12 +17,20 @@ public abstract class GenericConsumer implements ConsumerInterface {
     protected final Semaphore concurrencyPermit;
     protected final NingAsyncHttpClientImpl httpClient;
     protected volatile boolean run;
+    protected final boolean collectQueueStats;
+    protected final StatsManager statsManager;
 
-    public GenericConsumer(BlockingQueue queue, Semaphore concurrencyPermit) {
+    public GenericConsumer(BlockingQueue queue, Semaphore concurrencyPermit, boolean collectQueueStats, StatsManager statsManager) {
         this.run = true;
         this.queue = queue;
         this.concurrencyPermit = concurrencyPermit;
         httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
+        this.collectQueueStats = collectQueueStats;
+        this.statsManager = statsManager;
+
+        if (collectQueueStats && statsManager != null) {
+            statsManager.createCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
+        }
     }
 
     /**
@@ -52,6 +61,9 @@ public abstract class GenericConsumer implements ConsumerInterface {
                  */
                 WorkItem work = queue.poll(2, TimeUnit.SECONDS);
                 if (work != null) {
+                    if (collectQueueStats && statsManager != null) {
+                        statsManager.incrementCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
+                    }
                     processWorkItem(work);
                 } else {
                     concurrencyPermit.release();

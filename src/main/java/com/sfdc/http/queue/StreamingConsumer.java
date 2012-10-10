@@ -2,6 +2,7 @@ package com.sfdc.http.queue;
 
 import com.ning.http.client.Cookie;
 import com.sfdc.http.client.handler.StatefulHandler;
+import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +22,8 @@ import java.util.concurrent.Semaphore;
 public class StreamingConsumer extends GenericConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamingConsumer.class);
 
-    public StreamingConsumer(BlockingQueue queue, Semaphore concurrencyPermit) {
-        super(queue, concurrencyPermit);
+    public StreamingConsumer(BlockingQueue queue, Semaphore concurrencyPermit, boolean collectQueueStats, StatsManager statsManager1) {
+        super(queue, concurrencyPermit, collectQueueStats, statsManager1);
         LOGGER.info("Started Request Consumer.  Max Concurrency: " + concurrencyPermit.availablePermits());
     }
 

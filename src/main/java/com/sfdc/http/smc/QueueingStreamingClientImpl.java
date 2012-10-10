@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * @author psrinivasan
@@ -27,11 +28,14 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     private String sessionId;
     private String instance;
     private String clientId;
-    protected final StreamingClientFSMContext _fsm;
+    //protected final StreamingClientFSMContext _fsm;
+    //protected final StreamingClientHandshakeFSMContext _fsm; //used for debugging purposes
+    protected final StreamingClientSubscribeFSMContext _fsm; //used for debugging purposes
     private final Producer handshakeProducer;
     private final Producer defaultProducer;
     private List<Cookie> cookies;
     private String[] channels;
+    private final Semaphore handshakeConcurrencyPermit;
 
     public String getSessionId() {
         return sessionId;
@@ -57,14 +61,17 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.clientId = clientId;
     }
 
-    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels) {
+    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels, int maxHandshakeConcurrency) {
         this.sessionId = sessionId;
         this.instance = instance;
         this.clientId = clientId;
         this.handshakeProducer = handshakeProducer;
         this.defaultProducer = defaultProducer;
         this.channels = channels;
-        _fsm = new StreamingClientFSMContext(this);
+        handshakeConcurrencyPermit = new Semaphore(maxHandshakeConcurrency);
+        //_fsm = new StreamingClientFSMContext(this);
+        //_fsm = new StreamingClientHandshakeFSMContext(this);
+        _fsm = new StreamingClientSubscribeFSMContext(this);
     }
 
     public void start() {
@@ -108,6 +115,12 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     public void startHandshake() {
         WorkItem work = createWorkItem(WorkItem.Operation.HANDSHAKE);
         Producer p = (handshakeProducer == null) ? defaultProducer : handshakeProducer;
+        try {
+            handshakeConcurrencyPermit.acquire();
+        } catch (InterruptedException e) {
+            LOGGER.warn("exception thrown while waiting for handshake concurrency semaphore.  Actual handshake concurrency may not be what you expect.");
+            e.printStackTrace();
+        }
         p.publish(work);
         _fsm.onStartingHandshake(null);
     }
@@ -192,6 +205,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void onHandshakeComplete(List<Cookie> cookies, String clientId) {
+        handshakeConcurrencyPermit.release();
         setCookies(cookies);
         setClientId(clientId);
         _fsm.onHandshakeComplete(cookies, clientId);

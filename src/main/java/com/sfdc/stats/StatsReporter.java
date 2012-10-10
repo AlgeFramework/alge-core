@@ -3,6 +3,9 @@ package com.sfdc.stats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author psrinivasan
  *         Date: 9/25/12
@@ -23,6 +26,7 @@ public class StatsReporter implements Runnable {
     public void run() {
         while (run) {
             logAggregateStats();
+            logCustomStats();
             try {
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
@@ -45,6 +49,19 @@ public class StatsReporter implements Runnable {
 
 
         );
+    }
+
+    public void logCustomStats() {
+        if (statsManager == null) {
+            return;
+        }
+        ConcurrentHashMap hashMap = statsManager.getCustomStatsHash();
+        Enumeration keys = hashMap.keys();
+        String key = null;
+        while (keys.hasMoreElements()) {
+            key = (String) keys.nextElement();
+            LOGGER.info("Stats: " + key + "=" + statsManager.getCustomStats(key));
+        }
     }
 
     public void stop() {

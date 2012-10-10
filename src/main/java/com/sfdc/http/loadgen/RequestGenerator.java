@@ -75,7 +75,8 @@ public class RequestGenerator implements Runnable {
                     config.getInstance(),
                     pcQueue.getProducer(),
                     pcQueue.getProducer(),
-                    config.getTopics());
+                    config.getTopics(),
+                    config.getMaxHandshakeConcurrency());
             LOGGER.debug("Going to start client with session id: " + sessionId);
             httpClient.start();
             if (!run) {

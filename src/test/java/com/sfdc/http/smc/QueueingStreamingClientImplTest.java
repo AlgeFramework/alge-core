@@ -4,6 +4,7 @@ import com.sfdc.http.queue.Producer;
 import com.sfdc.http.queue.StreamingConsumer;
 import com.sfdc.http.queue.WorkItem;
 import com.sfdc.http.util.SoapLoginUtil;
+import com.sfdc.stats.StatsManager;
 import junit.framework.TestCase;
 
 import java.util.concurrent.LinkedBlockingDeque;
@@ -23,15 +24,16 @@ public class QueueingStreamingClientImplTest extends TestCase {
     private Thread consumerThread;
 
     public void setUp() throws Exception {
-        String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8", "123456", "https://ist6.soma.salesforce.com/");
+        //String[] credentials = SoapLoginUtil.login("dpham@180.private.streaming.20.org8", "123456", "https://ist6.soma.salesforce.com/");
+        String[] credentials = SoapLoginUtil.login("admin@ist8.streaming.20.systest.org501", "123456", "https://ist8.soma.salesforce.com/");
         sessionId = credentials[0];
         instance = credentials[1];
         LinkedBlockingDeque<WorkItem> queue = new LinkedBlockingDeque<WorkItem>();
-        producer = new Producer(queue);
+        producer = new Producer(queue, true, StatsManager.getInstance());
         Semaphore numConcurrentClients = new Semaphore(2);
-        streamingConsumer = new StreamingConsumer(queue, numConcurrentClients);
+        streamingConsumer = new StreamingConsumer(queue, numConcurrentClients, true, StatsManager.getInstance());
         String[] channels = {"/topic/accountTopic", "/topic/c1Topic"};
-        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels);
+        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, 1);
         consumerThread = new Thread(streamingConsumer);
         consumerThread.start();
 

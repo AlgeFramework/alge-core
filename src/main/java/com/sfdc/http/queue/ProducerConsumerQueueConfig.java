@@ -19,6 +19,13 @@ public class ProducerConsumerQueueConfig {
     public final String sessionsFile;
     public final String[] topics;
     public final String instance;
+    public final boolean collectQueueStats;
+
+    public int getMaxHandshakeConcurrency() {
+        return maxHandshakeConcurrency;
+    }
+
+    public final int maxHandshakeConcurrency;
 
 
     public int getConcurrency() {
@@ -41,24 +48,30 @@ public class ProducerConsumerQueueConfig {
         return instance;
     }
 
-    public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics, String instance) {
+    public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics, String instance, int maxHandshakeConcurrency, boolean collectQueueStats) {
         this.concurrency = concurrency;
         this.numHandshakes = numHandshakes;
         this.sessionsFile = sessionsFile;
         this.topics = topics;
         this.instance = instance;
+        this.maxHandshakeConcurrency = maxHandshakeConcurrency;
+        this.collectQueueStats = collectQueueStats;
     }
 
     public ProducerConsumerQueueConfig(String fileName) throws IOException {
         Properties p = loadConfigProperties(fileName);
-        concurrency = Integer.parseInt(p.getProperty("handshake.poc.producer.max.concurrency", "10000"));
-        numHandshakes = Integer.parseInt(p.getProperty("handshake.poc.producer.handshake.count", "10000"));
+        concurrency = Integer.parseInt(p.getProperty("http_client.max.concurrency", "10000"));
+        numHandshakes = Integer.parseInt(p.getProperty("producer.handshake.count", "10000"));
         sessionsFile = p.getProperty("sessions.file", "NO_SESSIONS_FILE_SPECIFIED_IN_config.properties");
         instance = p.getProperty("instance", "NO_INSTANCE_SPECIFIED_IN_config.properties");
         String topicList = p.getProperty("channels");
         topics = topicList.split(",");
+        maxHandshakeConcurrency = Integer.parseInt(p.getProperty("max.handshake.concurrency"));
+        collectQueueStats = Boolean.parseBoolean(p.getProperty("collect_queue_stats"));
         System.out.println("max concurrency = " + concurrency);
         System.out.println("handshake count = " + numHandshakes);
+        System.out.println("handshake concurrency = " + maxHandshakeConcurrency);
+        System.out.println("Queue stats collection = " + collectQueueStats);
     }
 
     public ProducerConsumerQueueConfig() throws IOException {

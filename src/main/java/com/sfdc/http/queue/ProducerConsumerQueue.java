@@ -1,9 +1,11 @@
 package com.sfdc.http.queue;
 
+import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poc.SessionIdReader;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.Semaphore;
 
@@ -16,22 +18,24 @@ public class ProducerConsumerQueue implements Runnable {
     private final ProducerConsumerQueueConfig config;
     private final Producer producer;
     private ConsumerInterface consumer;
-    private final LinkedBlockingDeque<WorkItem> queue;
+    //private final LinkedBlockingDeque<WorkItem> queue;
+    private final BlockingQueue<WorkItem> queue;
     private final Semaphore concurrencyPermit;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueue.class);
     private Thread consumerThread;
+    public static final String QUEUE_STATS_METRIC = "Queue-Stats";
 
 
     public ProducerConsumerQueue(ProducerConsumerQueueConfig config) throws Exception {
         this.config = config;
         queue = new LinkedBlockingDeque<WorkItem>();
         SessionIdReader sessionIdReader = config.getSessionIdReader(config.sessionsFile);
-        producer = new Producer(queue);
+        producer = new Producer(queue, config.collectQueueStats, StatsManager.getInstance());
         concurrencyPermit = new Semaphore(config.concurrency);
     }
 
     public ProducerConsumerQueue initializeConsumer() {
-        consumer = new StreamingConsumer(queue, concurrencyPermit);
+        consumer = new StreamingConsumer(queue, concurrencyPermit, config.collectQueueStats, StatsManager.getInstance());
         return this;
     }
 
@@ -47,7 +51,7 @@ public class ProducerConsumerQueue implements Runnable {
         return consumer;
     }
 
-    public LinkedBlockingDeque<WorkItem> getQueue() {
+    public BlockingQueue<WorkItem> getQueue() {
         return queue;
     }
 
