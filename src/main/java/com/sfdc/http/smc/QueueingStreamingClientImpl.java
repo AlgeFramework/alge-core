@@ -28,9 +28,9 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     private String sessionId;
     private String instance;
     private String clientId;
-    //protected final StreamingClientFSMContext _fsm;
+    protected final StreamingClientFSMContext _fsm;
     //protected final StreamingClientHandshakeFSMContext _fsm; //used for debugging purposes
-    protected final StreamingClientSubscribeFSMContext _fsm; //used for debugging purposes
+    //protected final StreamingClientSubscribeFSMContext _fsm; //used for debugging purposes
     private final Producer handshakeProducer;
     private final Producer defaultProducer;
     private List<Cookie> cookies;
@@ -69,9 +69,9 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.defaultProducer = defaultProducer;
         this.channels = channels;
         this.handshakeConcurrencyPermit = handshakeConcurrencyPermit;
-        //_fsm = new StreamingClientFSMContext(this);
+        _fsm = new StreamingClientFSMContext(this);
         //_fsm = new StreamingClientHandshakeFSMContext(this);
-        _fsm = new StreamingClientSubscribeFSMContext(this);
+        //_fsm = new StreamingClientSubscribeFSMContext(this);
     }
 
     public void start() {
@@ -117,7 +117,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         Producer p = (handshakeProducer == null) ? defaultProducer : handshakeProducer;
         try {
             handshakeConcurrencyPermit.acquire();
-            System.out.println("Acquired Hansdshake Permit! - remaining permits " + handshakeConcurrencyPermit.availablePermits());
+            LOGGER.debug("Acquired Hansdshake Permit! - remaining permits " + handshakeConcurrencyPermit.availablePermits());
         } catch (InterruptedException e) {
             LOGGER.warn("exception thrown while waiting for handshake concurrency semaphore.  Actual handshake concurrency may not be what you expect.");
             e.printStackTrace();
