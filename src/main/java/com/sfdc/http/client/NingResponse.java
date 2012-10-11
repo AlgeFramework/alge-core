@@ -4,6 +4,8 @@ import com.ning.http.client.Cookie;
 import com.ning.http.client.FluentCaseInsensitiveStringsMap;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,7 @@ import java.util.List;
  */
 public class NingResponse implements com.ning.http.client.Response {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NingResponse.class);
     private com.ning.http.client.Response response;
 
     public NingResponse(com.ning.http.client.Response response) {
@@ -115,39 +118,12 @@ public class NingResponse implements com.ning.http.client.Response {
         return response.hasResponseBody();
     }
 
-    //todo: remove the boiler plate code in the getClientId(), getChannel(), and friends.
     public String getClientId() throws Exception {
-        String responseBody = null;
-        try {
-            responseBody = response.getResponseBody();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(responseBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return findTokeninJSonArray(rootNode, "clientId");
+        return getBayeuxTokenValue("clientId");
     }
 
     public String getChannel() throws Exception {
-        String responseBody = null;
-        try {
-            responseBody = response.getResponseBody();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(responseBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return findTokeninJSonArray(rootNode, "channel");
+        return getBayeuxTokenValue("channel");
     }
 
     /**
@@ -157,55 +133,16 @@ public class NingResponse implements com.ning.http.client.Response {
      * @throws Exception
      */
     public String getSubscription() throws Exception {
-        String responseBody = null;
-        try {
-            responseBody = response.getResponseBody();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(responseBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return findTokeninJSonArray(rootNode, "subscription");
+        return getBayeuxTokenValue("subscription");
     }
 
     public boolean getBayeuxSuccessResponseField() throws Exception {
-        String responseBody = null;
-        try {
-            responseBody = response.getResponseBody();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(responseBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Boolean.parseBoolean(findTokeninJSonArray(rootNode, "successful"));
+        return Boolean.parseBoolean(getBayeuxTokenValue("successful"));
 
     }
 
     public String getBayeuxError() throws Exception {
-        String responseBody = null;
-        try {
-            responseBody = response.getResponseBody();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(responseBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return findTokeninJSonArray(rootNode, "error");
+        return getBayeuxTokenValue("error");
     }
 
     /**
@@ -228,5 +165,26 @@ public class NingResponse implements com.ning.http.client.Response {
             }
         }
         throw new Exception("could not find(or parse) " + searchString + " field in Bayeux response.  Response is " + rootNode.asText());
+    }
+
+    public String getBayeuxTokenValue(String token) throws Exception {
+        String responseBody = null;
+        try {
+            responseBody = response.getResponseBody();
+            if ((responseBody == null) || (responseBody == "")) {
+                LOGGER.error("Received Empty Response Body!");
+                throw new Exception("Received Empty Response Body");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(responseBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return findTokeninJSonArray(rootNode, token);
     }
 }

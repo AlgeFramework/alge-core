@@ -23,6 +23,9 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
     private static final Logger LOGGER = LoggerFactory.getLogger(StatefulHandler.class);
     private StreamingClient streamingClient;
     private StatsManager statsManager;
+    public static final String BAYEUX_UNKNOWN_CLIENT_ERROR = "402::Unknown client";
+    public static final String BAYEUX_INTERNAL_SERVER_ERROR = "500::Internal server error";
+
 
     public StatefulHandler(StreamingClient sc, StatsManager statsManager) {
         super();
@@ -44,8 +47,14 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
                 statsManager.incrementUnsuccessfulBayeuxResponseCount();
             }
             //TODO:  have more meaningful log line that includes info about which request failed.
-            if (response.getBayeuxError().equalsIgnoreCase("402::Unknown client")) {
+            if (response.getBayeuxError().equalsIgnoreCase(BAYEUX_UNKNOWN_CLIENT_ERROR)) {
                 streamingClient.onUnknownClientId(response);
+            } else if (response.getBayeuxError().equalsIgnoreCase(BAYEUX_INTERNAL_SERVER_ERROR)) {
+                /*
+                 * 500 internal server errors get treated the same irrespective of whether the status
+                 * code is communicated through http or through Bayeux.
+                 */
+                streamingClient.on500Error(response);
             }
             return retVal;
         }
