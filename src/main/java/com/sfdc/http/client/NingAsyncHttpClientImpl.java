@@ -33,7 +33,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     private static final boolean BLOCKING = false;
     private static final boolean THREADED = false;
     private static final String PUSH_ENDPOINT = "/cometd/25.0";
-    private static final int IO_THREAD_MULTIPLIER = 10;
+    private static final int IO_THREAD_MULTIPLIER = 1000;
     private static final int MAX_CONNECTIONS_TOTAL = 100000;
     private static final int MAX_CONNECTIONS_PER_HOST = 100000;
     private Semaphore semaphore;
@@ -43,6 +43,9 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
                     "xmlns:urn='urn:partner.soap.sforce.com'><soapenv:Body>";
     private static final String ENV_END = "</soapenv:Body></soapenv:Envelope>";
 
+    /*
+     * todo: how does one refactor the ugly boiler plate code that's shared across constructors?
+     */
     public NingAsyncHttpClientImpl(Semaphore concurrencyPermit) {
         super(new AsyncHttpClientConfig.Builder()
                 .setIOThreadMultiplier(IO_THREAD_MULTIPLIER)
