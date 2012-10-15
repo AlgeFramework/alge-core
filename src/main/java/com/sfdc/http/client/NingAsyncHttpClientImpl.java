@@ -33,7 +33,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     private static final boolean BLOCKING = false;
     private static final boolean THREADED = false;
     private static final String PUSH_ENDPOINT = "/cometd/25.0";
-    private static final int IO_THREAD_MULTIPLIER = 10;
+    private static final int IO_THREAD_MULTIPLIER = 100;
     private static final int MAX_CONNECTIONS_TOTAL = 100000;
     private static final int MAX_CONNECTIONS_PER_HOST = 100000;
     private Semaphore semaphore;

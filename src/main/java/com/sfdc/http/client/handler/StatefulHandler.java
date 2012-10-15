@@ -87,6 +87,7 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
             }
             LOGGER.error("Fell through completed operation recognition! Could not classify response as an expected streaming operation");
             LOGGER.error(response.getClientId() + ":unknown200statuscode:unknown");
+            LOGGER.error(response.getResponseBody());
 
         }
         return retVal;
