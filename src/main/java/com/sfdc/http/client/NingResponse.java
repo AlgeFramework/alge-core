@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -122,8 +124,8 @@ public class NingResponse implements com.ning.http.client.Response {
         return getBayeuxTokenValue("clientId");
     }
 
-    public String getChannel() throws Exception {
-        return getBayeuxTokenValue("channel");
+    public ArrayList<String> getChannels() throws Exception {
+        return getBayeuxTokenValueAllMatches("channel");
     }
 
     /**
@@ -151,7 +153,7 @@ public class NingResponse implements com.ning.http.client.Response {
      *
      * @param rootNode
      * @param searchString
-     * @return
+     * @return This method returns only the first match!
      */
     public String findTokeninJSonArray(JsonNode rootNode, String searchString) throws Exception {
         for (int i = 0; i < rootNode.size(); i++) {
@@ -165,6 +167,52 @@ public class NingResponse implements com.ning.http.client.Response {
             }
         }
         throw new Exception("could not find(or parse) " + searchString + " field in Bayeux response.  Response is " + rootNode.asText());
+    }
+
+    public ArrayList<String> findTokeninJSonArrayAllMatches(JsonNode rootNode, String searchString) throws Exception {
+        ArrayList<String> list = new ArrayList<String>();
+        for (int i = 0; i < rootNode.size(); i++) {
+            Iterator<String> itr = rootNode.get(i).getFieldNames();
+            while (itr.hasNext()) {
+                String field = itr.next();
+                //System.out.println("field: " + field);
+                //System.out.println(" is value field? : " + rootNode.get(i).path(field).isValueNode());
+                //System.out.println(" field as text: " + rootNode.get(i).path(field).asText());
+                //System.out.println(" field as ... : " + rootNode.get(i).path(field).toString());
+                if (field.equalsIgnoreCase(searchString)) {
+                    list.add(rootNode.get(i).path(field).asText());
+                }
+            }
+        }
+        if (list.size() == 0) {
+            throw new Exception("could not find(or parse) " + searchString + " field in Bayeux response.  Response is " + rootNode.asText());
+        }
+        return list;
+    }
+
+    /*
+     *  findTokeninJSonArrayAllNodes, findTokeninJSonArrayAllMatches, and findTokeninJSonArray only look through the first level
+     *  nodes.  There seems to be no point in going (recursively) through the entire tree given the nature of the bayeux json responses.
+    */
+    public ArrayList<JsonNode> findTokeninJSonArrayAllNodes(JsonNode rootNode, String searchString) throws Exception {
+        ArrayList<JsonNode> list = new ArrayList<JsonNode>();
+        for (int i = 0; i < rootNode.size(); i++) {
+            Iterator<String> itr = rootNode.get(i).getFieldNames();
+            while (itr.hasNext()) {
+                String field = itr.next();
+                //System.out.println("field: " + field);
+                //System.out.println(" is value field? : " + rootNode.get(i).path(field).isValueNode());
+                //System.out.println(" field as text: " + rootNode.get(i).path(field).asText());
+                //System.out.println(" field as ... : " + rootNode.get(i).path(field).toString());
+                if (field.equalsIgnoreCase(searchString)) {
+                    list.add(rootNode.get(i).path(field));
+                }
+            }
+        }
+        if (list.size() == 0) {
+            throw new Exception("could not find(or parse) " + searchString + " field in Bayeux response.  Response is " + rootNode.asText());
+        }
+        return list;
     }
 
     public String getBayeuxTokenValue(String token) throws Exception {
@@ -186,5 +234,46 @@ public class NingResponse implements com.ning.http.client.Response {
             e.printStackTrace();
         }
         return findTokeninJSonArray(rootNode, token);
+    }
+
+    public ArrayList<String> getBayeuxTokenValueAllMatches(String token) throws Exception {
+        String responseBody = null;
+        try {
+            responseBody = response.getResponseBody();
+            if ((responseBody == null) || (responseBody == "")) {
+                LOGGER.error("Received Empty Response Body!");
+                throw new Exception("Received Empty Response Body");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(responseBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return findTokeninJSonArrayAllMatches(rootNode, token);
+    }
+
+    public HashMap<String, String> parseEventData(String data) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = null;
+        System.out.println(data);
+        try {
+            node = mapper.readTree(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        for (int i = 0; i < node.size(); i++) {
+//            Iterator<String> itr = node.get(i).getFieldNames();
+//            while (itr.hasNext()) {
+//                System.out.println("array[" + i + "] field: " + node.get(i).path(itr.next()).toString());
+//            }
+//
+//
+//        }
+        return null;
     }
 }

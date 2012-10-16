@@ -10,6 +10,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 /**
  * @author psrinivasan
  *         Date: 8/25/12
@@ -75,7 +77,7 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
         return r;
     }
 
-    public String getOperationType(NingResponse response) throws Exception {
-        return response.getChannel();
+    public ArrayList<String> getOperationType(NingResponse response) throws Exception {
+        return response.getChannels();
     }
 }

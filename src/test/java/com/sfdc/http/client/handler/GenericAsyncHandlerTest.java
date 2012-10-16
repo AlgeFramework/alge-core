@@ -54,7 +54,7 @@ public class GenericAsyncHandlerTest extends TestCase {
         assertEquals("BAYEUX_BROWSER", bayeuxBrowserCookie.getName());
         NingResponse sr = new NingResponse(response);
         assertTrue(sr.getBayeuxSuccessResponseField());
-        assertEquals("/meta/handshake", sr.getChannel());
+        assertEquals("/meta/handshake", sr.getChannels().get(0));
     }
 
     public void testOnCompleted_subscribe() throws Exception {

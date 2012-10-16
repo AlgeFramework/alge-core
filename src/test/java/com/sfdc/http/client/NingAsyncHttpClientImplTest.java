@@ -110,7 +110,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         assertEquals(1, rootNode.size());
         NingResponse sr = new NingResponse(response);
         assertTrue(sr.getBayeuxSuccessResponseField());
-        assertEquals("/meta/handshake", sr.getChannel());
+        assertEquals("/meta/handshake", sr.getChannels().get(0));
     }
 
     public void testStreamingHandshake_no_concurrency_control() throws Exception {
@@ -148,7 +148,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         Response subscribeResponse = subscribeFuture.get();
         NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
-        assertEquals("/meta/subscribe", srSubscribe.getChannel());
+        assertEquals("/meta/subscribe", srSubscribe.getChannels().get(0));
         assertEquals("/topic/accountTopic", srSubscribe.getSubscription());
 
         //now connect ...
@@ -182,7 +182,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         subscribeResponse = subscribeFuture.get();
         NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
-        assertEquals("/meta/subscribe", srSubscribe.getChannel());
+        assertEquals("/meta/subscribe", srSubscribe.getChannels().get(0));
         assertEquals("/topic/accountTopic", srSubscribe.getSubscription());
 
     }
@@ -207,7 +207,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         Response subscribeResponse = subscribeFuture.get();
         NingResponse srSubscribe = new NingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
-        assertEquals("/meta/disconnect", srSubscribe.getChannel());
+        assertEquals("/meta/disconnect", srSubscribe.getChannels().get(0));
     }
 
     public void testDisconnect_no_concurrency_control() throws Exception {

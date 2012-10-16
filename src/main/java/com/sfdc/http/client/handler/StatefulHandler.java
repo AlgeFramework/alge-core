@@ -8,6 +8,8 @@ import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 /**
  * @author psrinivasan
  *         Date: 9/10/12
@@ -58,29 +60,36 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
             }
             return retVal;
         }
-        String s = getOperationType(response);
+        ArrayList<String> s = getOperationType(response);
         LOGGER.debug("RESPONSE OPERATION = " + s);
-        if (s.equals("/meta/handshake")) {
+        if (s.contains("/meta/handshake")) {
             if (statsManager != null) {
                 statsManager.incrementHandshakeCount();
             }
             LOGGER.info(response.getClientId() + ":handshake:complete");
             streamingClient.onHandshakeComplete(response.getCookies(), response.getClientId());
 
-        } else if (s.equals("/meta/subscribe")) {
+        } else if (s.contains("/meta/subscribe")) {
             if (statsManager != null) {
                 statsManager.incrementSubscriptionCount();
             }
             LOGGER.info(response.getClientId() + ":subscribe:complete");
             streamingClient.onSubscribeComplete();
 
-        } else if (s.equals("/meta/connect")) {
+        } else if (s.contains("/meta/connect") && (s.size() == 1)) {
             if (statsManager != null) {
                 statsManager.incrementConnectCount();
             }
             LOGGER.info(response.getClientId() + ":connect:complete");
             streamingClient.onConnectComplete();
 
+        } else if (s.contains("/meta/connect")) {
+            if (statsManager != null) {
+                statsManager.incrementConnectCount();
+                LOGGER.info("Received event: " + response.getResponseBody());
+            }
+
+            streamingClient.onConnectComplete();
         } else {
             if (statsManager != null) {
                 statsManager.incrementOtherHttp200Count();
