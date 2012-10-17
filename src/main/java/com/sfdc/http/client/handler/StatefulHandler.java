@@ -86,8 +86,9 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
         } else if (s.contains("/meta/connect")) {
             if (statsManager != null) {
                 statsManager.incrementConnectCount();
-                LOGGER.info("Received event: " + response.getResponseBody());
             }
+            LOGGER.info(response.getClientId() + ":connect:complete");
+            LOGGER.info("ReceivedEvent: " + response.getResponseBody());
 
             streamingClient.onConnectComplete();
         } else {

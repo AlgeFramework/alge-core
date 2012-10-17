@@ -7,6 +7,7 @@ import com.sfdc.http.util.SoapLoginUtil;
 import com.sfdc.stats.StatsManager;
 import junit.framework.TestCase;
 
+import java.util.Date;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.Semaphore;
 
@@ -33,7 +34,8 @@ public class QueueingStreamingClientImplTest extends TestCase {
         Semaphore numConcurrentClients = new Semaphore(2);
         streamingConsumer = new StreamingConsumer(queue, numConcurrentClients, true, StatsManager.getInstance());
         String[] channels = {"/topic/accountTopic", "/topic/c1Topic"};
-        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, new Semaphore(1));
+        long runtime = 0;
+        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, new Semaphore(1), new Date(new Date().getTime() + runtime));
         consumerThread = new Thread(streamingConsumer);
         consumerThread.start();
 

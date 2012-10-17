@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -21,6 +22,7 @@ import java.util.concurrent.Semaphore;
  *         This client, similar to StreamingClientImpl, encapsulates FSM assisted transitions into
  *         handshakes, subscribes, and connects. Only difference is that it pushes requests into a
  *         queue rather than working directly with the http client.
+ *         There is one instance of this class per client.
  */
 public class QueueingStreamingClientImpl implements StreamingClient {
 
@@ -36,6 +38,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     private List<Cookie> cookies;
     private String[] channels;
     private final Semaphore handshakeConcurrencyPermit;
+    private final Date endTime;
 
     public String getSessionId() {
         return sessionId;
@@ -61,7 +64,8 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.clientId = clientId;
     }
 
-    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels, Semaphore handshakeConcurrencyPermit) {
+    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels, Semaphore handshakeConcurrencyPermit, Date endTime) {
+        this.endTime = endTime;
         this.sessionId = sessionId;
         this.instance = instance;
         this.clientId = clientId;
@@ -144,6 +148,9 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void shouldWeReconnect() {
+        if ((System.currentTimeMillis() >= endTime.getTime())) {
+
+        }
         //No.
         _fsm.onFinishedScenario();
         //Other option was

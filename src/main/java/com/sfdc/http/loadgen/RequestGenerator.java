@@ -9,6 +9,7 @@ import poc.SessionIdReader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -27,6 +28,7 @@ public class RequestGenerator implements Runnable {
     private SessionIdReader sessionReader;
     private volatile boolean run;
     private final Semaphore handshakeConcurrencyPermit;
+    private final Date endTime;
 
 
     public RequestGenerator(String config) {
@@ -56,6 +58,7 @@ public class RequestGenerator implements Runnable {
             System.exit(1);
         }
         handshakeConcurrencyPermit = new Semaphore(this.config.getMaxHandshakeConcurrency());
+        endTime = this.config.endDate;
     }
 
     public void generateRequests() {
@@ -79,7 +82,9 @@ public class RequestGenerator implements Runnable {
                     pcQueue.getProducer(),
                     pcQueue.getProducer(),
                     config.getTopics(),
-                    handshakeConcurrencyPermit);
+                    handshakeConcurrencyPermit,
+                    endTime
+            );
             LOGGER.debug("Going to start client with session id: " + sessionId);
             httpClient.start();
             if (!run) {

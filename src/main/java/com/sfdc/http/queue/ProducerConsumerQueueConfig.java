@@ -5,6 +5,7 @@ import poc.SessionIdReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -20,6 +21,8 @@ public class ProducerConsumerQueueConfig {
     public final String[] topics;
     public final String instance;
     public final boolean collectQueueStats;
+    public final long runtime;
+    public final Date endDate;
 
     public int getMaxHandshakeConcurrency() {
         return maxHandshakeConcurrency;
@@ -48,7 +51,7 @@ public class ProducerConsumerQueueConfig {
         return instance;
     }
 
-    public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics, String instance, int maxHandshakeConcurrency, boolean collectQueueStats) {
+    public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics, String instance, int maxHandshakeConcurrency, boolean collectQueueStats, long runtime) {
         this.concurrency = concurrency;
         this.numHandshakes = numHandshakes;
         this.sessionsFile = sessionsFile;
@@ -56,6 +59,8 @@ public class ProducerConsumerQueueConfig {
         this.instance = instance;
         this.maxHandshakeConcurrency = maxHandshakeConcurrency;
         this.collectQueueStats = collectQueueStats;
+        this.runtime = runtime;
+        this.endDate = new Date(new Date().getTime() + runtime);
     }
 
     public ProducerConsumerQueueConfig(String fileName) throws IOException {
@@ -64,6 +69,8 @@ public class ProducerConsumerQueueConfig {
         numHandshakes = Integer.parseInt(p.getProperty("producer.handshake.count", "10000"));
         sessionsFile = p.getProperty("sessions.file", "NO_SESSIONS_FILE_SPECIFIED_IN_config.properties");
         instance = p.getProperty("instance", "NO_INSTANCE_SPECIFIED_IN_config.properties");
+        runtime = Long.parseLong(p.getProperty("runtime"));
+        this.endDate = new Date(new Date().getTime() + runtime);
         String topicList = p.getProperty("channels");
         topics = topicList.split(",");
         maxHandshakeConcurrency = Integer.parseInt(p.getProperty("max.handshake.concurrency"));
