@@ -56,6 +56,11 @@
             <artifactId>my_smc</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>SystemInfo</groupId>
+            <artifactId>SystemInfo</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!--
         if we use this dependency, command line maven is unhappy.
         So we comment it out, and then add a jar to the intellij

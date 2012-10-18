@@ -1,5 +1,6 @@
 package com.sfdc.http.loadgen;
 
+import com.sfdc.SystemInfo;
 import com.sfdc.stats.StatsReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
+        checkSystemPrerequisites();
         RequestGenerator rg = new RequestGenerator("src/main/resources/config.properties");
         Thread requestsThread = new Thread(rg);
         requestsThread.start();
@@ -70,5 +72,22 @@ public class Main {
         t.setName("StatsReporter");
         t.start();
         return t;
+    }
+
+    public static void checkSystemPrerequisites() {
+        SystemInfo systemInfo = SystemInfo.createSystemInfo();
+        int range, fds;
+        try {
+            range = systemInfo.getEphemeralPortCount();
+            LOGGER.info("Ephemeral port range = " + range);
+            System.out.println("Ephemeral port range = " + range);
+            fds = systemInfo.getMaxFileDescriptors();
+            LOGGER.info("File Descriptor Limit = " + fds);
+            System.out.println("File Descriptor Limit = " + fds);
+        } catch (Exception e) {
+            LOGGER.error("COULD NOT GET EPHEMERAL PORT COUNT AND/OR FD LIMITS");
+            e.printStackTrace();
+        }
+
     }
 }
