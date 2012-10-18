@@ -1,5 +1,7 @@
 package com.sfdc.http.queue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import poc.SessionIdReader;
 
 import java.io.FileInputStream;
@@ -23,6 +25,9 @@ public class ProducerConsumerQueueConfig {
     public final boolean collectQueueStats;
     public final long runtime;
     public final Date endDate;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueueConfig.class);
+
 
     public int getMaxHandshakeConcurrency() {
         return maxHandshakeConcurrency;
@@ -71,14 +76,20 @@ public class ProducerConsumerQueueConfig {
         instance = p.getProperty("instance", "NO_INSTANCE_SPECIFIED_IN_config.properties");
         runtime = Long.parseLong(p.getProperty("runtime"));
         this.endDate = new Date(new Date().getTime() + runtime);
+        System.out.println("run time(applies to connects): " + runtime);
+        LOGGER.info("run time(applies to connects): " + runtime);
         String topicList = p.getProperty("channels");
         topics = topicList.split(",");
         maxHandshakeConcurrency = Integer.parseInt(p.getProperty("max.handshake.concurrency"));
         collectQueueStats = Boolean.parseBoolean(p.getProperty("collect_queue_stats"));
         System.out.println("max concurrency = " + concurrency);
+        LOGGER.info("max concurrency = " + concurrency);
         System.out.println("handshake count = " + numHandshakes);
+        LOGGER.info("handshake count = " + numHandshakes);
         System.out.println("handshake concurrency = " + maxHandshakeConcurrency);
+        LOGGER.info("handshake concurrency = " + maxHandshakeConcurrency);
         System.out.println("Queue stats collection = " + collectQueueStats);
+        LOGGER.info("Queue stats collection = " + collectQueueStats);
     }
 
     public ProducerConsumerQueueConfig() throws IOException {

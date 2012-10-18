@@ -149,13 +149,12 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     @Override
     public void shouldWeReconnect() {
         if ((System.currentTimeMillis() >= endTime.getTime())) {
-
+            LOGGER.info(clientId + ":willnotreconnect");
+            _fsm.onFinishedScenario();
+        } else {
+            LOGGER.info(clientId + ":reconnecting");
+            _fsm.onReconnectRequest();
         }
-        //No.
-        _fsm.onFinishedScenario();
-        //Other option was
-        //_fsm.onReconnectRequest();
-
     }
 
     @Override
