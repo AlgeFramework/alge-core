@@ -84,6 +84,9 @@ public class Main {
             fds = systemInfo.getMaxFileDescriptors();
             LOGGER.info("File Descriptor Limit = " + fds);
             System.out.println("File Descriptor Limit = " + fds);
+            if ((fds < 64000) || (range < 20000)) {
+                LOGGER.error("System does not meet prerequisites of 64000 files and 20000 ephemeral ports");
+            }
         } catch (Exception e) {
             LOGGER.error("COULD NOT GET EPHEMERAL PORT COUNT AND/OR FD LIMITS");
             e.printStackTrace();
