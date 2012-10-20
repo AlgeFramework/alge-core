@@ -22,8 +22,8 @@ import java.util.concurrent.Semaphore;
 public class StreamingConsumer extends GenericConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamingConsumer.class);
 
-    public StreamingConsumer(BlockingQueue queue, Semaphore concurrencyPermit, boolean collectQueueStats, StatsManager statsManager1) {
-        super(queue, concurrencyPermit, collectQueueStats, statsManager1);
+    public StreamingConsumer(BlockingQueue queue, Semaphore concurrencyPermit, boolean collectQueueStats, StatsManager statsManager1, boolean collectConcurrencyStats) {
+        super(queue, concurrencyPermit, collectQueueStats, statsManager1, collectConcurrencyStats);
         LOGGER.info("Started Request Consumer.  Max Concurrency: " + concurrencyPermit.availablePermits());
     }
 

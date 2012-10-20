@@ -39,6 +39,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     private String[] channels;
     private final Semaphore handshakeConcurrencyPermit;
     private final Date endTime;
+    private final Semaphore concurrencyPermit;
 
     public String getSessionId() {
         return sessionId;
@@ -64,7 +65,13 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.clientId = clientId;
     }
 
-    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer, Producer defaultProducer, String[] channels, Semaphore handshakeConcurrencyPermit, Date endTime) {
+    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer,
+                                       Producer defaultProducer, String[] channels,
+                                       Semaphore handshakeConcurrencyPermit,
+                                       Date endTime,
+                                       Semaphore concurrencyPermit
+    ) {
+        this.concurrencyPermit = concurrencyPermit;
         this.endTime = endTime;
         this.sessionId = sessionId;
         this.instance = instance;
@@ -111,7 +118,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         w.setSessionId(sessionId);
         w.setCookies(cookies);
         w.setClientId(clientId);
-        w.setHandler(new StatefulHandler(this, StatsManager.getInstance()));
+        w.setHandler(new StatefulHandler(this, StatsManager.getInstance(), concurrencyPermit));
         return w;
     }
 

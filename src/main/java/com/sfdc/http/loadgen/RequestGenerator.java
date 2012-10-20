@@ -28,6 +28,7 @@ public class RequestGenerator implements Runnable {
     private SessionIdReader sessionReader;
     private volatile boolean run;
     private final Semaphore handshakeConcurrencyPermit;
+    private final Semaphore concurrencyPermit;
     private final Date endTime;
 
 
@@ -59,6 +60,7 @@ public class RequestGenerator implements Runnable {
         }
         handshakeConcurrencyPermit = new Semaphore(this.config.getMaxHandshakeConcurrency());
         endTime = this.config.endDate;
+        concurrencyPermit = this.config.getConcurrencyPermit();
     }
 
     public void generateRequests() {
@@ -83,7 +85,8 @@ public class RequestGenerator implements Runnable {
                     pcQueue.getProducer(),
                     config.getTopics(),
                     handshakeConcurrencyPermit,
-                    endTime
+                    endTime,
+                    concurrencyPermit
             );
             LOGGER.debug("Going to start client with session id: " + sessionId);
             httpClient.start();

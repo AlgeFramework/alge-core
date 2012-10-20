@@ -7,6 +7,7 @@ import com.sfdc.http.client.handler.StatefulHandler;
 
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 
 /**
  * @author psrinivasan
@@ -106,7 +107,10 @@ public class StreamingClientImpl implements StreamingClient {
         //System.out.println("State before starting Handshake: Client State: " + getState());
 
         //System.out.println("starting handshake action");
-        currentFuture = httpClient.streamingHandshake(instance, sessionId, new StatefulHandler(this, null));
+        currentFuture = httpClient.streamingHandshake(instance, sessionId, new StatefulHandler(this, null, new Semaphore(1)));
+        //the value of the semaphore doesnt really matter above, since there is no concurrency control.
+        //concurrency control is impossible without using the producer consumer model (concurrency permits are implemented
+        // in the generic consumer and the throttlinggenericasynchandler.
         //System.out.println("Started Handshake: Client State: " + getState());
         _fsm.onStartingHandshake(currentFuture);
     }
@@ -116,7 +120,7 @@ public class StreamingClientImpl implements StreamingClient {
         //System.out.println("going to start subscribe: Client State: " + getState() + " " + System.currentTimeMillis());
 
         //System.out.println("start subscribe action" + " " + System.currentTimeMillis());
-        currentFuture = httpClient.streamingSubscribe(instance, sessionId, cookies, clientId, "/topic/accountTopic", new StatefulHandler(this, null));
+        currentFuture = httpClient.streamingSubscribe(instance, sessionId, cookies, clientId, "/topic/accountTopic", new StatefulHandler(this, null, new Semaphore(1)));
         //System.out.println("Started Subscribe: Client State: " + getState() + " " + System.currentTimeMillis());
         //todo: find a way to pull topics information from a config file.  remember, we'll have to subscribe to 3 \
         // topics, not 1.
@@ -126,7 +130,7 @@ public class StreamingClientImpl implements StreamingClient {
     @Override
     public void startConnect() {
         //System.out.println("going to start connect: Client State: " + getState());
-        currentFuture = httpClient.streamingConnect(instance, sessionId, cookies, clientId, new StatefulHandler(this, null));
+        currentFuture = httpClient.streamingConnect(instance, sessionId, cookies, clientId, new StatefulHandler(this, null, new Semaphore(1)));
         //System.out.println("Started Connect: Client State: " + getState());
         _fsm.onStartingConnect(currentFuture);
     }

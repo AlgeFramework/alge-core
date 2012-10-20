@@ -24,6 +24,7 @@ public class ProducerConsumerQueue implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueue.class);
     private Thread consumerThread;
     public static final String QUEUE_STATS_METRIC = "Queue-Num-Elements";
+    public static final String CONCURRENCY_STATS_METRIC = "Num-ConcurrencyPermits-Used";
 
 
     public ProducerConsumerQueue(ProducerConsumerQueueConfig config) throws Exception {
@@ -31,11 +32,11 @@ public class ProducerConsumerQueue implements Runnable {
         queue = new LinkedBlockingDeque<WorkItem>();
         SessionIdReader sessionIdReader = config.getSessionIdReader(config.sessionsFile);
         producer = new Producer(queue, config.collectQueueStats, StatsManager.getInstance());
-        concurrencyPermit = new Semaphore(config.concurrency);
+        concurrencyPermit = config.getConcurrencyPermit();
     }
 
     public ProducerConsumerQueue initializeConsumer() {
-        consumer = new StreamingConsumer(queue, concurrencyPermit, config.collectQueueStats, StatsManager.getInstance());
+        consumer = new StreamingConsumer(queue, concurrencyPermit, config.collectQueueStats, StatsManager.getInstance(), config.collectConcurrencyPermitStats);
         return this;
     }
 

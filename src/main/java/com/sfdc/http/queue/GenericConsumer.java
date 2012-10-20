@@ -18,18 +18,25 @@ public abstract class GenericConsumer implements ConsumerInterface {
     protected final NingAsyncHttpClientImpl httpClient;
     protected volatile boolean run;
     protected final boolean collectQueueStats;
+    protected final boolean collectConcurrencyStats;
+
     protected final StatsManager statsManager;
 
-    public GenericConsumer(BlockingQueue queue, Semaphore concurrencyPermit, boolean collectQueueStats, StatsManager statsManager) {
+    public GenericConsumer(BlockingQueue queue, Semaphore concurrencyPermit, boolean collectQueueStats, StatsManager statsManager, boolean collectConcurrencyStats) {
         this.run = true;
         this.queue = queue;
         this.concurrencyPermit = concurrencyPermit;
-        httpClient = new NingAsyncHttpClientImpl(concurrencyPermit);
+        httpClient = new NingAsyncHttpClientImpl();
         this.collectQueueStats = collectQueueStats;
+        this.collectConcurrencyStats = collectConcurrencyStats;
         this.statsManager = statsManager;
 
         if (collectQueueStats && statsManager != null) {
             statsManager.createCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);
+        }
+
+        if (collectConcurrencyStats && statsManager != null) {
+            statsManager.createCustomStats(ProducerConsumerQueue.CONCURRENCY_STATS_METRIC);
         }
     }
 
@@ -53,6 +60,9 @@ public abstract class GenericConsumer implements ConsumerInterface {
                  * than specified.
                  */
                 concurrencyPermit.acquire();
+                if (collectConcurrencyStats && statsManager != null) {
+                    statsManager.incrementCustomStats(ProducerConsumerQueue.CONCURRENCY_STATS_METRIC);
+                }
                 /*
                  * wait for a bit, and if we don't find work to do,
                  * release our permit, and retry.
@@ -67,6 +77,10 @@ public abstract class GenericConsumer implements ConsumerInterface {
                     processWorkItem(work);
                 } else {
                     concurrencyPermit.release();
+                    if (collectConcurrencyStats && statsManager != null) {
+                        statsManager.decrementCustomStats(ProducerConsumerQueue.CONCURRENCY_STATS_METRIC);
+                    }
+
                 }
 
             } catch (InterruptedException e) {

@@ -9,9 +9,7 @@ package com.sfdc.http.client;
 import com.ning.http.client.*;
 import com.ning.http.client.Cookie;
 import com.sfdc.http.client.filter.ThrottlingRequestFilter;
-import com.sfdc.http.client.filter.ThrottlingResponseFilter;
 import com.sfdc.http.client.handler.GenericAsyncHandler;
-import com.sfdc.http.client.handler.ThrottlingGenericAsyncHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -44,19 +42,20 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     private static final String ENV_END = "</soapenv:Body></soapenv:Envelope>";
 
     /*
-     * todo: how does one refactor the ugly boiler plate code that's shared across constructors?
+     * the concurrency permit semaphore is a no op.  refactor it!
      */
-    public NingAsyncHttpClientImpl(Semaphore concurrencyPermit) {
-        super(new AsyncHttpClientConfig.Builder()
-                .setIOThreadMultiplier(IO_THREAD_MULTIPLIER)
-                .setMaximumConnectionsTotal(MAX_CONNECTIONS_TOTAL)
-                .setMaximumConnectionsPerHost(MAX_CONNECTIONS_PER_HOST)
-                .addRequestFilter(new ThrottlingRequestFilter())
-                        //.setIdleConnectionTimeoutInMs(125000)  // calling this did not help cope with a 120s long poll.
-                .setRequestTimeoutInMs(125000)         //ditto.
-                .addResponseFilter(new ThrottlingResponseFilter(concurrencyPermit))
-                .build());
-    }
+//    public NingAsyncHttpClientImpl(Semaphore concurrencyPermit) {
+//        super(new AsyncHttpClientConfig.Builder()
+//                .setIOThreadMultiplier(IO_THREAD_MULTIPLIER)
+//                .setMaximumConnectionsTotal(MAX_CONNECTIONS_TOTAL)
+//                .setMaximumConnectionsPerHost(MAX_CONNECTIONS_PER_HOST)
+//                .addRequestFilter(new ThrottlingRequestFilter())
+//                        //.setIdleConnectionTimeoutInMs(125000)  // calling this did not help cope with a 120s long poll.
+//                .setRequestTimeoutInMs(125000)         //ditto.
+//                //.addResponseFilter(new ThrottlingResponseFilter(concurrencyPermit))  //yipee dont need this any more since
+//                //concurrency (permit) throttling is done by the genericconsumer and the throttlinggenericasynchandler
+//                .build());
+//    }
 
     public NingAsyncHttpClientImpl() {
         super(new AsyncHttpClientConfig.Builder()
@@ -67,7 +66,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
                         //.setIdleConnectionTimeoutInMs(125000)  // calling this did not help cope with a 120s long poll.
                 .setRequestTimeoutInMs(125000)         //ditto.
                 .build());
-        semaphore = null;
+        //semaphore = null;
     }
 
     public BoundRequestBuilder prepareQuery(String instance, String soql, String sessionId) {
@@ -175,6 +174,7 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
                 .addHeader("Authorization", "Bearer " + sessionId)
                 .addHeader("Content-Type", "application/json")
                 .setBody(SfdcConstants.SUBSCRIBE_PREFIX_MESSAGE + channel + SfdcConstants.SUBSCRIBE_IN_1_MESSAGE + clientId + SfdcConstants.SUBSCRIBE_POST_MESSAGE);
+        //System.out.println("request body: " + SfdcConstants.SUBSCRIBE_PREFIX_MESSAGE + channel + SfdcConstants.SUBSCRIBE_IN_1_MESSAGE + clientId + SfdcConstants.SUBSCRIBE_POST_MESSAGE);
         for (Cookie cookie : cookies) {
             requestBuilder.addCookie(cookie);
         }
@@ -208,7 +208,8 @@ public class NingAsyncHttpClientImpl extends com.ning.http.client.AsyncHttpClien
     }
 
     private AsyncHandler returnAppropriateHandler() {
-        return (semaphore == null) ? new GenericAsyncHandler() : new ThrottlingGenericAsyncHandler(semaphore);
+        //return (semaphore == null) ? new GenericAsyncHandler() : new ThrottlingGenericAsyncHandler(semaphore);
+        return new GenericAsyncHandler();
     }
 
     private byte[] soapXmlForLogin(String username, String password)

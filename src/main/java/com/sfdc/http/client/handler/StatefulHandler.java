@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 /**
  * @author psrinivasan
@@ -20,7 +21,7 @@ import java.util.ArrayList;
  *         <p/>
  *         This class, just like it's parent, needs to be very light.
  */
-public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler {
+public class StatefulHandler extends ThrottlingGenericAsyncHandler implements AsyncHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatefulHandler.class);
     private StreamingClient streamingClient;
@@ -29,8 +30,8 @@ public class StatefulHandler extends GenericAsyncHandler implements AsyncHandler
     public static final String BAYEUX_INTERNAL_SERVER_ERROR = "500::Internal server error";
 
 
-    public StatefulHandler(StreamingClient sc, StatsManager statsManager) {
-        super();
+    public StatefulHandler(StreamingClient sc, StatsManager statsManager, Semaphore concurrencyPermit) {
+        super(concurrencyPermit, statsManager);
         this.streamingClient = sc;
         this.statsManager = statsManager;
     }

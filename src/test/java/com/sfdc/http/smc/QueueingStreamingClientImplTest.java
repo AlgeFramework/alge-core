@@ -32,10 +32,10 @@ public class QueueingStreamingClientImplTest extends TestCase {
         LinkedBlockingDeque<WorkItem> queue = new LinkedBlockingDeque<WorkItem>();
         producer = new Producer(queue, true, StatsManager.getInstance());
         Semaphore numConcurrentClients = new Semaphore(2);
-        streamingConsumer = new StreamingConsumer(queue, numConcurrentClients, true, StatsManager.getInstance());
+        streamingConsumer = new StreamingConsumer(queue, numConcurrentClients, true, StatsManager.getInstance(), true);
         String[] channels = {"/topic/accountTopic", "/topic/c1Topic"};
         long runtime = 0;
-        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, new Semaphore(1), new Date(new Date().getTime() + runtime));
+        streamingClient = new QueueingStreamingClientImpl(sessionId, instance, producer, producer, channels, new Semaphore(1), new Date(new Date().getTime() + runtime), new Semaphore(1));
         consumerThread = new Thread(streamingConsumer);
         consumerThread.start();
 

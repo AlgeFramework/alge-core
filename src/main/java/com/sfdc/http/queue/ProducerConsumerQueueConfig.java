@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 
 /**
  * @author psrinivasan
@@ -23,8 +24,14 @@ public class ProducerConsumerQueueConfig {
     public final String[] topics;
     public final String instance;
     public final boolean collectQueueStats;
+    public final boolean collectConcurrencyPermitStats;
     public final long runtime;
     public final Date endDate;
+    /*
+     * concurrencyPermit is interesting.  It's initialized in this class, and it's permits are acquired in the
+     * GenericConsumer, and are released in the ThrottlingGenericAsyncHandler.
+     */
+    private final Semaphore concurrencyPermit;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueueConfig.class);
 
@@ -35,6 +42,9 @@ public class ProducerConsumerQueueConfig {
 
     public final int maxHandshakeConcurrency;
 
+    public Semaphore getConcurrencyPermit() {
+        return concurrencyPermit;
+    }
 
     public int getConcurrency() {
         return concurrency;
@@ -56,14 +66,22 @@ public class ProducerConsumerQueueConfig {
         return instance;
     }
 
-    public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics, String instance, int maxHandshakeConcurrency, boolean collectQueueStats, long runtime) {
+    public ProducerConsumerQueueConfig(int concurrency, int numHandshakes, String sessionsFile, String[] topics,
+                                       String instance,
+                                       int maxHandshakeConcurrency,
+                                       boolean collectQueueStats,
+                                       long runtime,
+                                       boolean collectConcurrencyPermitStats
+    ) {
         this.concurrency = concurrency;
+        this.concurrencyPermit = new Semaphore(concurrency);
         this.numHandshakes = numHandshakes;
         this.sessionsFile = sessionsFile;
         this.topics = topics;
         this.instance = instance;
         this.maxHandshakeConcurrency = maxHandshakeConcurrency;
         this.collectQueueStats = collectQueueStats;
+        this.collectConcurrencyPermitStats = collectConcurrencyPermitStats;
         this.runtime = runtime;
         this.endDate = new Date(new Date().getTime() + runtime);
     }
@@ -71,6 +89,7 @@ public class ProducerConsumerQueueConfig {
     public ProducerConsumerQueueConfig(String fileName) throws IOException {
         Properties p = loadConfigProperties(fileName);
         concurrency = Integer.parseInt(p.getProperty("http_client.max.concurrency", "10000"));
+        this.concurrencyPermit = new Semaphore(concurrency);
         numHandshakes = Integer.parseInt(p.getProperty("producer.handshake.count", "10000"));
         sessionsFile = p.getProperty("sessions.file", "NO_SESSIONS_FILE_SPECIFIED_IN_config.properties");
         instance = p.getProperty("instance", "NO_INSTANCE_SPECIFIED_IN_config.properties");
@@ -82,6 +101,8 @@ public class ProducerConsumerQueueConfig {
         topics = topicList.split(",");
         maxHandshakeConcurrency = Integer.parseInt(p.getProperty("max.handshake.concurrency"));
         collectQueueStats = Boolean.parseBoolean(p.getProperty("collect_queue_stats"));
+        collectConcurrencyPermitStats = Boolean.parseBoolean(p.getProperty("collect_concurrency_stats"));
+
         System.out.println("max concurrency = " + concurrency);
         LOGGER.info("max concurrency = " + concurrency);
         System.out.println("handshake count = " + numHandshakes);
