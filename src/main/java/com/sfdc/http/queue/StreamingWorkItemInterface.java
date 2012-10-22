@@ -15,4 +15,7 @@ public interface StreamingWorkItemInterface extends WorkItemInterface {
 
     String getChannel();
 
+    public enum Operation {HANDSHAKE, CONNECT, SUBSCRIBE, DISCONNECT, UNSUBSCRIBE}
+
+
 }

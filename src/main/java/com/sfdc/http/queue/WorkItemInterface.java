@@ -31,5 +31,6 @@ public interface WorkItemInterface {
 
     StatefulHandler getHandler();
 
-    public enum Operation {HANDSHAKE, CONNECT, SUBSCRIBE, DISCONNECT, UNSUBSCRIBE}
+    public enum Operation {}
+
 }
