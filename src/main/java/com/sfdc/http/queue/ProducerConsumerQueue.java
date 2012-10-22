@@ -16,10 +16,10 @@ import java.util.concurrent.Semaphore;
  */
 public class ProducerConsumerQueue implements Runnable {
     private final ProducerConsumerQueueConfig config;
-    private final Producer producer;
+    private final ProducerInterface producer;
     private ConsumerInterface consumer;
-    //private final LinkedBlockingDeque<WorkItem> queue;
-    private final BlockingQueue<WorkItem> queue;
+    //private final LinkedBlockingDeque<StreamingWorkItem> queue;
+    private final BlockingQueue<WorkItemInterface> queue;
     private final Semaphore concurrencyPermit;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerConsumerQueue.class);
     private Thread consumerThread;
@@ -29,9 +29,9 @@ public class ProducerConsumerQueue implements Runnable {
 
     public ProducerConsumerQueue(ProducerConsumerQueueConfig config) throws Exception {
         this.config = config;
-        queue = new LinkedBlockingDeque<WorkItem>();
+        queue = new LinkedBlockingDeque<WorkItemInterface>();
         SessionIdReader sessionIdReader = config.getSessionIdReader(config.sessionsFile);
-        producer = new Producer(queue, config.collectQueueStats, StatsManager.getInstance());
+        producer = new StreamingProducer(queue, config.collectQueueStats, StatsManager.getInstance());
         concurrencyPermit = config.getConcurrencyPermit();
     }
 
@@ -44,7 +44,7 @@ public class ProducerConsumerQueue implements Runnable {
         return config;
     }
 
-    public Producer getProducer() {
+    public ProducerInterface getProducer() {
         return producer;
     }
 
@@ -52,7 +52,7 @@ public class ProducerConsumerQueue implements Runnable {
         return consumer;
     }
 
-    public BlockingQueue<WorkItem> getQueue() {
+    public BlockingQueue<WorkItemInterface> getQueue() {
         return queue;
     }
 

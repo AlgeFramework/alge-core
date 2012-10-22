@@ -28,14 +28,15 @@ public class StreamingConsumer extends GenericConsumer {
     }
 
     @Override
-    public void processWorkItem(WorkItem work) {
+    public void processWorkItem(WorkItemInterface work1) {
+        StreamingWorkItem work = (StreamingWorkItem) work1;
         String instance = work.getInstance();
         String sessionId = work.getSessionId();
         String clientID = work.getClientId();
         List<Cookie> cookies = work.getCookies();
         StatefulHandler handler = work.getHandler();
         String subscriptionChannel = work.getChannel();
-        WorkItem.Operation operation = work.getOperation();
+        StreamingWorkItemInterface.Operation operation = work.getOperation();
         switch (operation) {
             case HANDSHAKE:
                 LOGGER.debug("Beginning handshake");

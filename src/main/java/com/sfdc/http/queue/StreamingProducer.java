@@ -13,11 +13,11 @@ import java.util.concurrent.BlockingQueue;
  *         Pushes requests into the work queue for consumption by
  *         consumers.
  */
-public class Producer {
-//    public class Producer implements Runnable {
+public class StreamingProducer implements ProducerInterface {
+//    public class StreamingProducer implements Runnable {
 
-    private final BlockingQueue<WorkItem> queue;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Producer.class);
+    private final BlockingQueue<WorkItemInterface> queue;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamingProducer.class);
     //private int numHandshakes;
     //private SessionIdReader sessionIdReader;
     // TODO:  temporary declaration - it's not clear that we want request generator to be a instance var.
@@ -28,7 +28,7 @@ public class Producer {
     private final StatsManager statsManager;
 
 
-/*    public Producer(BlockingQueue<WorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
+/*    public StreamingProducer(BlockingQueue<StreamingWorkItem> queue, int numHandshakes, SessionIdReader sessionIdReader, String instance) throws Exception {
         run = true;
         this.queue = queue;
         //requestGeneratorPrototype = new RequestGeneratorPrototype();
@@ -37,7 +37,7 @@ public class Producer {
         //this.instance = instance;
     }*/
 
-    public Producer(BlockingQueue<WorkItem> queue, boolean collectQueueStats, StatsManager statsManager) {
+    public StreamingProducer(BlockingQueue<WorkItemInterface> queue, boolean collectQueueStats, StatsManager statsManager) {
         this.statsManager = statsManager;
         run = true;
         this.queue = queue;
@@ -61,7 +61,7 @@ public class Producer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LOGGER.info("Producer is done.  exiting");
+        LOGGER.info("StreamingProducer is done.  exiting");
     }*/
 
 /*    public void publish(int num_requests) {
@@ -73,7 +73,8 @@ public class Producer {
         }
     }*/
 
-    public void publish(WorkItem w) {
+    @Override
+    public void publish(WorkItemInterface w) {
         if (!run) {
             LOGGER.warn("PRODUCER IS STOPPED BUT ATTEMPT TO PUBLISH WAS MADE");
             return;
@@ -97,6 +98,7 @@ public class Producer {
         }
     }*/
 
+    @Override
     public void stop() {
         run = false;
     }

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  *         Time: 9:35 PM
  */
 public abstract class GenericConsumer implements ConsumerInterface {
-    protected final BlockingQueue<WorkItem> queue;
+    protected final BlockingQueue<WorkItemInterface> queue;
     protected final Semaphore concurrencyPermit;
     protected final NingAsyncHttpClientImpl httpClient;
     protected volatile boolean run;
@@ -69,7 +69,7 @@ public abstract class GenericConsumer implements ConsumerInterface {
                  *  This ensures that we can stop if someone has called "stop"
                  *  and also reduces the chances that we will hog up
                  */
-                WorkItem work = queue.poll(2, TimeUnit.SECONDS);
+                WorkItemInterface work = queue.poll(2, TimeUnit.SECONDS);
                 if (work != null) {
                     if (collectQueueStats && statsManager != null) {
                         statsManager.decrementCustomStats(ProducerConsumerQueue.QUEUE_STATS_METRIC);

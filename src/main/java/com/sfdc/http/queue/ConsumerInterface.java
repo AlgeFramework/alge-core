@@ -9,7 +9,7 @@ public interface ConsumerInterface extends Runnable {
     @Override
     void run();
 
-    void processWorkItem(WorkItem work);
+    void processWorkItem(WorkItemInterface work);
 
     void stop();
 }

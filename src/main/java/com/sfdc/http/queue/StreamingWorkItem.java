@@ -10,7 +10,7 @@ import java.util.List;
  *         Date: 8/31/12
  *         Time: 11:00 PM
  */
-public class WorkItem {
+public class StreamingWorkItem implements StreamingWorkItemInterface {
     private String sessionId;
     private String clientId;
     private String instance;
@@ -18,11 +18,9 @@ public class WorkItem {
     private StatefulHandler handler;
     private String subscriptionChannel;
 
-    public enum Operation {HANDSHAKE, CONNECT, SUBSCRIBE, DISCONNECT, UNSUBSCRIBE}
-
     private Operation operation;
 
-    public WorkItem() {
+    public StreamingWorkItem() {
         sessionId = null;
         clientId = null;
         instance = null;
@@ -31,58 +29,72 @@ public class WorkItem {
         subscriptionChannel = null;
     }
 
+    @Override
     public void setSessionId(String s) {
         sessionId = s;
     }
 
+    @Override
     public void setClientId(String c) {
         clientId = c;
     }
 
+    @Override
     public void setInstance(String i) {
         instance = i;
     }
 
+    @Override
     public void setCookies(List<Cookie> c) {
         cookies = c;
     }
 
+    @Override
     public void setOperation(Operation o) {
         operation = o;
     }
 
+    @Override
     public void setHandler(StatefulHandler handler) {
         this.handler = handler;
     }
 
+    @Override
     public void setChannel(String channel) {
         this.subscriptionChannel = channel;
     }
 
+    @Override
     public String getSessionId() {
         return sessionId;
     }
 
+    @Override
     public String getClientId() {
         return clientId;
     }
 
+    @Override
     public String getInstance() {
         return instance;
     }
 
+    @Override
     public List<Cookie> getCookies() {
         return cookies;
     }
 
+    @Override
     public Operation getOperation() {
         return operation;
     }
 
+    @Override
     public StatefulHandler getHandler() {
         return handler;
     }
 
+    @Override
     public String getChannel() {
         return subscriptionChannel;
     }

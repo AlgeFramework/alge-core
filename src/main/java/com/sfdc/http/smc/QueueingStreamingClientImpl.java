@@ -3,8 +3,9 @@ package com.sfdc.http.smc;
 import com.ning.http.client.Cookie;
 import com.ning.http.client.Response;
 import com.sfdc.http.client.handler.StatefulHandler;
-import com.sfdc.http.queue.Producer;
-import com.sfdc.http.queue.WorkItem;
+import com.sfdc.http.queue.ProducerInterface;
+import com.sfdc.http.queue.StreamingWorkItem;
+import com.sfdc.http.queue.StreamingWorkItemInterface;
 import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,8 @@ public class QueueingStreamingClientImpl implements StreamingClient {
     protected final StreamingClientFSMContext _fsm;
     //protected final StreamingClientHandshakeFSMContext _fsm; //used for debugging purposes
     //protected final StreamingClientSubscribeFSMContext _fsm; //used for debugging purposes
-    private final Producer handshakeProducer;
-    private final Producer defaultProducer;
+    private final ProducerInterface handshakeProducer;
+    private final ProducerInterface defaultProducer;
     private List<Cookie> cookies;
     private String[] channels;
     private final Semaphore handshakeConcurrencyPermit;
@@ -65,8 +66,8 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.clientId = clientId;
     }
 
-    public QueueingStreamingClientImpl(String sessionId, String instance, Producer handshakeProducer,
-                                       Producer defaultProducer, String[] channels,
+    public QueueingStreamingClientImpl(String sessionId, String instance, ProducerInterface handshakeProducer,
+                                       ProducerInterface defaultProducer, String[] channels,
                                        Semaphore handshakeConcurrencyPermit,
                                        Date endTime,
                                        Semaphore concurrencyPermit
@@ -111,8 +112,8 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.channels = channels;
     }
 
-    public WorkItem createWorkItem(WorkItem.Operation operation) {
-        WorkItem w = new WorkItem();
+    public StreamingWorkItemInterface createWorkItem(StreamingWorkItemInterface.Operation operation) {
+        StreamingWorkItemInterface w = new StreamingWorkItem();
         w.setOperation(operation);
         w.setInstance(instance);
         w.setSessionId(sessionId);
@@ -124,8 +125,8 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void startHandshake() {
-        WorkItem work = createWorkItem(WorkItem.Operation.HANDSHAKE);
-        Producer p = (handshakeProducer == null) ? defaultProducer : handshakeProducer;
+        StreamingWorkItemInterface work = createWorkItem(StreamingWorkItemInterface.Operation.HANDSHAKE);
+        ProducerInterface p = (handshakeProducer == null) ? defaultProducer : handshakeProducer;
         try {
             handshakeConcurrencyPermit.acquire();
             LOGGER.debug("Acquired Hansdshake Permit! - remaining permits " + handshakeConcurrencyPermit.availablePermits());
@@ -139,7 +140,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void startSubscribe() {
-        WorkItem work = createWorkItem(WorkItem.Operation.SUBSCRIBE);
+        StreamingWorkItemInterface work = createWorkItem(StreamingWorkItemInterface.Operation.SUBSCRIBE);
         work.setChannel(channels[0]);//todo:  make the subscribes happen for multiple channels.  this means changing the fsm.
         defaultProducer.publish(work);
         _fsm.onStartingSubscribe(null);
@@ -147,7 +148,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void startConnect() {
-        WorkItem work = createWorkItem(WorkItem.Operation.CONNECT);
+        StreamingWorkItemInterface work = createWorkItem(StreamingWorkItemInterface.Operation.CONNECT);
         work.setChannel("/topic/accountTopic");
         defaultProducer.publish(work);
         _fsm.onStartingConnect(null);
