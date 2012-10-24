@@ -27,6 +27,36 @@ public class StreamingConsumer extends GenericConsumer {
         LOGGER.info("Started Request Consumer.  Max Concurrency: " + concurrencyPermit.availablePermits());
     }
 
+//    @Override
+//    public void processWorkItem(WorkItemInterface work1) {
+//        StreamingWorkItem work = (StreamingWorkItem) work1;
+//        String instance = work.getInstance();
+//        String sessionId = work.getSessionId();
+//        String clientID = work.getClientId();
+//        List<Cookie> cookies = work.getCookies();
+//        StatefulHandler handler = work.getHandler();
+//        String subscriptionChannel = work.getChannel();
+//        Operation operation = work.getOperation();
+//        switch (operation) {
+//            case HANDSHAKE:
+//                LOGGER.debug("Beginning handshake");
+//                httpClient.streamingHandshake(instance, sessionId, handler);
+//                break;
+//            case CONNECT:
+//                LOGGER.debug("Beginning connect");
+//                httpClient.streamingConnect(instance, sessionId, cookies, clientID, handler);
+//                break;
+//            case SUBSCRIBE:
+//                LOGGER.debug("Beginning subscribe");
+//                httpClient.streamingSubscribe(instance, sessionId, cookies, clientID, subscriptionChannel, handler);
+//                break;
+//            case DISCONNECT:
+//                break;
+//            case UNSUBSCRIBE:
+//                break;
+//        }
+//    }
+
     @Override
     public void processWorkItem(WorkItemInterface work1) {
         StreamingWorkItem work = (StreamingWorkItem) work1;
@@ -36,24 +66,26 @@ public class StreamingConsumer extends GenericConsumer {
         List<Cookie> cookies = work.getCookies();
         StatefulHandler handler = work.getHandler();
         String subscriptionChannel = work.getChannel();
-        StreamingWorkItemInterface.Operation operation = work.getOperation();
-        switch (operation) {
-            case HANDSHAKE:
-                LOGGER.debug("Beginning handshake");
-                httpClient.streamingHandshake(instance, sessionId, handler);
-                break;
-            case CONNECT:
-                LOGGER.debug("Beginning connect");
-                httpClient.streamingConnect(instance, sessionId, cookies, clientID, handler);
-                break;
-            case SUBSCRIBE:
-                LOGGER.debug("Beginning subscribe");
-                httpClient.streamingSubscribe(instance, sessionId, cookies, clientID, subscriptionChannel, handler);
-                break;
-            case DISCONNECT:
-                break;
-            case UNSUBSCRIBE:
-                break;
+        String operation = work.getOperation();
+        if (operation.equalsIgnoreCase(StreamingWorkItem.HANDSHAKE)) {
+            LOGGER.debug("Beginning handshake");
+            httpClient.streamingHandshake(instance, sessionId, handler);
+        } else if (operation.equalsIgnoreCase(StreamingWorkItem.CONNECT)) {
+            LOGGER.debug("Beginning connect");
+            httpClient.streamingConnect(instance, sessionId, cookies, clientID, handler);
+
+        } else if (operation.equalsIgnoreCase(StreamingWorkItem.SUBSCRIBE)) {
+            LOGGER.debug("Beginning subscribe");
+            httpClient.streamingSubscribe(instance, sessionId, cookies, clientID, subscriptionChannel, handler);
+
+        } else if (operation.equalsIgnoreCase(StreamingWorkItem.DISCONNECT)) {
+            LOGGER.error("DISCONNECT NOT IMPLEMENTED");
+
+        } else if (operation.equalsIgnoreCase(StreamingWorkItem.UNSUBSCRIBE)) {
+            LOGGER.error("UNSUBSCRIBE NOT IMPLEMENTED");
+
+        } else {
+            LOGGER.error("Consumer dequeued a work item that it couldn't understand");
         }
     }
 

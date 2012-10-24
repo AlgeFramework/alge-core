@@ -5,7 +5,7 @@ import com.ning.http.client.Response;
 import com.sfdc.http.client.handler.StatefulHandler;
 import com.sfdc.http.queue.ProducerInterface;
 import com.sfdc.http.queue.StreamingWorkItem;
-import com.sfdc.http.queue.StreamingWorkItemInterface;
+import com.sfdc.http.queue.WorkItemInterface;
 import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,8 +112,8 @@ public class QueueingStreamingClientImpl implements StreamingClient {
         this.channels = channels;
     }
 
-    public StreamingWorkItemInterface createWorkItem(StreamingWorkItemInterface.Operation operation) {
-        StreamingWorkItemInterface w = new StreamingWorkItem();
+    public WorkItemInterface createWorkItem(String operation) {
+        WorkItemInterface w = new StreamingWorkItem();
         w.setOperation(operation);
         w.setInstance(instance);
         w.setSessionId(sessionId);
@@ -125,7 +125,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void startHandshake() {
-        StreamingWorkItemInterface work = createWorkItem(StreamingWorkItemInterface.Operation.HANDSHAKE);
+        WorkItemInterface work = createWorkItem(StreamingWorkItem.HANDSHAKE);
         ProducerInterface p = (handshakeProducer == null) ? defaultProducer : handshakeProducer;
         try {
             handshakeConcurrencyPermit.acquire();
@@ -140,7 +140,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void startSubscribe() {
-        StreamingWorkItemInterface work = createWorkItem(StreamingWorkItemInterface.Operation.SUBSCRIBE);
+        WorkItemInterface work = createWorkItem(StreamingWorkItem.SUBSCRIBE);
         work.setChannel(channels[0]);//todo:  make the subscribes happen for multiple channels.  this means changing the fsm.
         defaultProducer.publish(work);
         _fsm.onStartingSubscribe(null);
@@ -148,7 +148,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void startConnect() {
-        StreamingWorkItemInterface work = createWorkItem(StreamingWorkItemInterface.Operation.CONNECT);
+        WorkItemInterface work = createWorkItem(StreamingWorkItem.CONNECT);
         work.setChannel("/topic/accountTopic");
         defaultProducer.publish(work);
         _fsm.onStartingConnect(null);

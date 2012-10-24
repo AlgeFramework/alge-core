@@ -4,6 +4,7 @@ package com.sfdc.http.queue;
  * @author psrinivasan
  *         Date: 10/21/12
  *         Time: 9:05 PM
+ *         DEPRECATED.  THE CODE DOESN"T USE THIS ANYWHERE.  CLASS NEEDS TO BE REMOVED FROM BUILD.
  */
 public interface StreamingWorkItemInterface extends WorkItemInterface {
 
@@ -14,8 +15,6 @@ public interface StreamingWorkItemInterface extends WorkItemInterface {
     String getClientId();
 
     String getChannel();
-
-    public enum Operation {HANDSHAKE, CONNECT, SUBSCRIBE, DISCONNECT, UNSUBSCRIBE}
 
 
 }

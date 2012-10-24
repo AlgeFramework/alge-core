@@ -2,7 +2,7 @@ package com.sfdc.http.client.handler;
 
 import com.ning.http.client.AsyncHandler;
 import com.ning.http.client.Response;
-import com.sfdc.http.client.NingResponse;
+import com.sfdc.http.client.StreamingResponse;
 import com.sfdc.http.smc.StreamingClient;
 import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class StatefulHandler extends ThrottlingGenericAsyncHandler implements As
     }
 
     public Object onSuccessfulHttpResponse(Object retVal) throws Exception {
-        NingResponse response = new NingResponse((Response) retVal);
+        StreamingResponse response = new StreamingResponse((Response) retVal);
         if (!isResponseSucessful(response)) {
             LOGGER.error("Request failed!");
             LOGGER.error("Request failed. State is: " + streamingClient.getState() + " Response is: " + response.getResponseBody());
@@ -134,7 +134,7 @@ public class StatefulHandler extends ThrottlingGenericAsyncHandler implements As
         return retVal;
     }
 
-    public boolean isResponseSucessful(NingResponse response) throws Exception {
+    public boolean isResponseSucessful(StreamingResponse response) throws Exception {
         return (response.getBayeuxSuccessResponseField() && (response.getStatusCode() == 200));
     }
 

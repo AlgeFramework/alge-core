@@ -17,7 +17,7 @@ public interface WorkItemInterface {
 
     void setCookies(List<Cookie> c);
 
-    void setOperation(Operation o);
+    void setOperation(String o);
 
     void setHandler(StatefulHandler handler);
 
@@ -27,10 +27,16 @@ public interface WorkItemInterface {
 
     List<Cookie> getCookies();
 
-    Operation getOperation();
+    String getOperation();
 
     StatefulHandler getHandler();
 
-    public enum Operation {}
+    void setClientId(String c);
+
+    void setChannel(String channel);
+
+    String getClientId();
+
+    String getChannel();
 
 }

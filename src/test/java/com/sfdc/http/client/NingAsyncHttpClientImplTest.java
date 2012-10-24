@@ -107,7 +107,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         assertEquals("sfdc-stream", streamingCookie.getName());
         assertEquals("BAYEUX_BROWSER", bayeuxBrowserCookie.getName());
         assertEquals(1, rootNode.size());
-        NingResponse sr = new NingResponse(response);
+        StreamingResponse sr = new StreamingResponse(response);
         assertTrue(sr.getBayeuxSuccessResponseField());
         assertEquals("/meta/handshake", sr.getChannels().get(0));
     }
@@ -138,14 +138,14 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         JsonNode rootNode = mapper.readTree(responseBody);
         System.out.println("size of array = " + rootNode.size());
         //String clientID = rootNode.get(0).path("clientId").asText();
-        NingResponse ningResponse = new NingResponse(response);
-        String clientID = ningResponse.getClientId();
+        StreamingResponse streamingResponse = new StreamingResponse(response);
+        String clientID = streamingResponse.getClientId();
         System.out.println("clientId: " + clientID);
 
         //subscribe
         Future<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
         Response subscribeResponse = subscribeFuture.get();
-        NingResponse srSubscribe = new NingResponse(subscribeResponse);
+        StreamingResponse srSubscribe = new StreamingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/subscribe", srSubscribe.getChannels().get(0));
         assertEquals("/topic/accountTopic", srSubscribe.getSubscription());
@@ -154,7 +154,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         Future<Response> connectFuture = asyncHttpClient.streamingConnect(instance, sessionId, cookies, clientID);
         Response connectResponse = connectFuture.get();
         System.out.println("response body: " + connectResponse.getResponseBody());
-        NingResponse sr = new NingResponse(connectResponse);
+        StreamingResponse sr = new StreamingResponse(connectResponse);
         assertTrue(sr.getBayeuxSuccessResponseField());
         System.out.println("success? " + sr.getBayeuxSuccessResponseField());
     }
@@ -172,14 +172,14 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
-        NingResponse ningResponse = new NingResponse(response);
-        String clientID = ningResponse.getClientId();
+        StreamingResponse streamingResponse = new StreamingResponse(response);
+        String clientID = streamingResponse.getClientId();
         /* SUBSCRIBE */
         //Future<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
         //Response subscribeResponse = subscribeFuture.get();
         Future<Response> subscribeFuture = asyncHttpClient.streamingSubscribe(instance, sessionId, cookies, clientID, "/topic/accountTopic");
         Response subscribeResponse = subscribeFuture.get();
-        NingResponse srSubscribe = new NingResponse(subscribeResponse);
+        StreamingResponse srSubscribe = new StreamingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/subscribe", srSubscribe.getChannels().get(0));
         assertEquals("/topic/accountTopic", srSubscribe.getSubscription());
@@ -199,12 +199,12 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         Future<Response> future = asyncHttpClient.streamingHandshake(instance, sessionId);
         Response response = future.get();
         List<Cookie> cookies = response.getCookies();
-        NingResponse ningResponse = new NingResponse(response);
-        String clientID = ningResponse.getClientId();
+        StreamingResponse streamingResponse = new StreamingResponse(response);
+        String clientID = streamingResponse.getClientId();
         /* DISCONNECT */
         Future<Response> subscribeFuture = asyncHttpClient.streamingDisconnect(instance, sessionId, cookies, clientID);
         Response subscribeResponse = subscribeFuture.get();
-        NingResponse srSubscribe = new NingResponse(subscribeResponse);
+        StreamingResponse srSubscribe = new StreamingResponse(subscribeResponse);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/disconnect", srSubscribe.getChannels().get(0));
     }

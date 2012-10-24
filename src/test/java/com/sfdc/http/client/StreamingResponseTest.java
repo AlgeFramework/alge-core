@@ -12,12 +12,12 @@ import java.util.ArrayList;
  *         Date: 10/15/12
  *         Time: 2:45 PM
  */
-public class NingResponseTest extends TestCase {
+public class StreamingResponseTest extends TestCase {
 
-    private NingResponse response;
+    private StreamingResponse response;
 
     public void setUp() {
-        response = new NingResponse(null);
+        response = new StreamingResponse(null);
 
     }
 

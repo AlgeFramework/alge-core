@@ -3,7 +3,7 @@ package com.sfdc.http.client.handler;
 import com.ning.http.client.Cookie;
 import com.ning.http.client.Response;
 import com.sfdc.http.client.NingAsyncHttpClientImpl;
-import com.sfdc.http.client.NingResponse;
+import com.sfdc.http.client.StreamingResponse;
 import com.sfdc.http.util.SoapLoginUtil;
 import junit.framework.TestCase;
 
@@ -52,7 +52,7 @@ public class GenericAsyncHandlerTest extends TestCase {
         }
         assertEquals("sfdc-stream", streamingCookie.getName());
         assertEquals("BAYEUX_BROWSER", bayeuxBrowserCookie.getName());
-        NingResponse sr = new NingResponse(response);
+        StreamingResponse sr = new StreamingResponse(response);
         assertTrue(sr.getBayeuxSuccessResponseField());
         assertEquals("/meta/handshake", sr.getChannels().get(0));
     }

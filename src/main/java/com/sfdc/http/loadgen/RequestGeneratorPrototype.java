@@ -1,7 +1,7 @@
 package com.sfdc.http.loadgen;
 
 import com.sfdc.http.queue.StreamingWorkItem;
-import com.sfdc.http.queue.StreamingWorkItemInterface;
+import com.sfdc.http.queue.WorkItemInterface;
 import com.sfdc.http.util.SoapLoginUtil;
 
 /**
@@ -22,20 +22,20 @@ public class RequestGeneratorPrototype {
         instance = credentials[1];
     }
 
-    public StreamingWorkItemInterface generateHandshakeWorkItem() {
-        StreamingWorkItemInterface w = new StreamingWorkItem();
+    public WorkItemInterface generateHandshakeWorkItem() {
+        WorkItemInterface w = new StreamingWorkItem();
 
         w.setInstance(instance);
         w.setSessionId(sessionId);
-        w.setOperation(StreamingWorkItemInterface.Operation.HANDSHAKE);
+        w.setOperation(StreamingWorkItem.HANDSHAKE);
         return w;
     }
 
-    public StreamingWorkItemInterface generateHandshakeWorkItem(String sessionId, String instance) {
-        StreamingWorkItemInterface w = new StreamingWorkItem();
+    public WorkItemInterface generateHandshakeWorkItem(String sessionId, String instance) {
+        WorkItemInterface w = new StreamingWorkItem();
         w.setInstance(instance);
         w.setSessionId(sessionId);
-        w.setOperation(StreamingWorkItemInterface.Operation.HANDSHAKE);
+        w.setOperation(StreamingWorkItem.HANDSHAKE);
         return w;
     }
 }

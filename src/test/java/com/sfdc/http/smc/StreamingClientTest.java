@@ -37,7 +37,7 @@ public class StreamingClientTest extends TestCase {
         streamingClient.startSubscribe();
         Future<Response> r = streamingClient.getFuture();
         Response response = r.get();
-        NingResponse srSubscribe = new NingResponse(response);
+        StreamingResponse srSubscribe = new StreamingResponse(response);
         assertTrue(srSubscribe.getBayeuxSuccessResponseField());
         assertEquals("/meta/subscribe", srSubscribe.getChannel());
         assertEquals("/topic/accountTopic", srSubscribe.getSubscription());

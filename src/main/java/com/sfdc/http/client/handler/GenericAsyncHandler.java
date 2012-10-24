@@ -5,7 +5,7 @@ import com.ning.http.client.HttpResponseBodyPart;
 import com.ning.http.client.HttpResponseHeaders;
 import com.ning.http.client.HttpResponseStatus;
 import com.ning.http.client.Response;
-import com.sfdc.http.client.NingResponse;
+import com.sfdc.http.client.StreamingResponse;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class GenericAsyncHandler implements com.ning.http.client.AsyncHandler {
         return r;
     }
 
-    public ArrayList<String> getOperationType(NingResponse response) throws Exception {
+    public ArrayList<String> getOperationType(StreamingResponse response) throws Exception {
         return response.getChannels();
     }
 }

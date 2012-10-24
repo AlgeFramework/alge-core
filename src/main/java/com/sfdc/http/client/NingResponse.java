@@ -1,7 +1,7 @@
 package com.sfdc.http.client;
 
-import com.ning.http.client.Cookie;
 import com.ning.http.client.FluentCaseInsensitiveStringsMap;
+import com.ning.http.client.Response;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -12,21 +12,19 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author psrinivasan
- *         Date: 8/28/12
- *         Time: 6:29 PM
+ *         Date: 10/22/12
+ *         Time: 5:00 PM
  */
 public class NingResponse implements com.ning.http.client.Response {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamingResponse.class);
+    protected Response response;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NingResponse.class);
-    private com.ning.http.client.Response response;
-
-    public NingResponse(com.ning.http.client.Response response) {
+    public NingResponse(Response response) {
         this.response = response;
     }
 
@@ -101,7 +99,7 @@ public class NingResponse implements com.ning.http.client.Response {
     }
 
     @Override
-    public List<Cookie> getCookies() {
+    public List<com.ning.http.client.Cookie> getCookies() {
         return response.getCookies();
     }
 
@@ -118,33 +116,6 @@ public class NingResponse implements com.ning.http.client.Response {
     @Override
     public boolean hasResponseBody() {
         return response.hasResponseBody();
-    }
-
-    public String getClientId() throws Exception {
-        return getBayeuxTokenValue("clientId");
-    }
-
-    public ArrayList<String> getChannels() throws Exception {
-        return getBayeuxTokenValueAllMatches("channel");
-    }
-
-    /**
-     * This will return a value only if the response is a valid subscribe call, else it will throw an exception.
-     *
-     * @return
-     * @throws Exception
-     */
-    public String getSubscription() throws Exception {
-        return getBayeuxTokenValue("subscription");
-    }
-
-    public boolean getBayeuxSuccessResponseField() throws Exception {
-        return Boolean.parseBoolean(getBayeuxTokenValue("successful"));
-
-    }
-
-    public String getBayeuxError() throws Exception {
-        return getBayeuxTokenValue("error");
     }
 
     /**
@@ -215,7 +186,7 @@ public class NingResponse implements com.ning.http.client.Response {
         return list;
     }
 
-    public String getBayeuxTokenValue(String token) throws Exception {
+    public String getTokenValue(String token) throws Exception {
         String responseBody = null;
         try {
             responseBody = response.getResponseBody();
@@ -236,7 +207,7 @@ public class NingResponse implements com.ning.http.client.Response {
         return findTokeninJSonArray(rootNode, token);
     }
 
-    public ArrayList<String> getBayeuxTokenValueAllMatches(String token) throws Exception {
+    public ArrayList<String> getTokenValueAllMatches(String token) throws Exception {
         String responseBody = null;
         try {
             responseBody = response.getResponseBody();
@@ -255,25 +226,5 @@ public class NingResponse implements com.ning.http.client.Response {
             e.printStackTrace();
         }
         return findTokeninJSonArrayAllMatches(rootNode, token);
-    }
-
-    public HashMap<String, String> parseEventData(String data) {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = null;
-        System.out.println(data);
-        try {
-            node = mapper.readTree(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//        for (int i = 0; i < node.size(); i++) {
-//            Iterator<String> itr = node.get(i).getFieldNames();
-//            while (itr.hasNext()) {
-//                System.out.println("array[" + i + "] field: " + node.get(i).path(itr.next()).toString());
-//            }
-//
-//
-//        }
-        return null;
     }
 }

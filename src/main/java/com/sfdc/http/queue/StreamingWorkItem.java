@@ -10,15 +10,22 @@ import java.util.List;
  *         Date: 8/31/12
  *         Time: 11:00 PM
  */
-public class StreamingWorkItem implements StreamingWorkItemInterface {
+public class StreamingWorkItem implements WorkItemInterface {
+
+
     private String sessionId;
     private String clientId;
     private String instance;
     private List<Cookie> cookies;
     private StatefulHandler handler;
     private String subscriptionChannel;
+    public static final String HANDSHAKE = "handshake";
+    public static final String CONNECT = "connect";
+    public static final String SUBSCRIBE = "subscribe";
+    public static final String DISCONNECT = "disconnect";
+    public static final String UNSUBSCRIBE = "unsubscribe";
 
-    private Operation operation;
+    private String operation;
 
     public StreamingWorkItem() {
         sessionId = null;
@@ -49,8 +56,9 @@ public class StreamingWorkItem implements StreamingWorkItemInterface {
         cookies = c;
     }
 
+
     @Override
-    public void setOperation(Operation o) {
+    public void setOperation(String o) {
         operation = o;
     }
 
@@ -85,7 +93,7 @@ public class StreamingWorkItem implements StreamingWorkItemInterface {
     }
 
     @Override
-    public Operation getOperation() {
+    public String getOperation() {
         return operation;
     }
 
