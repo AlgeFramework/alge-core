@@ -248,6 +248,7 @@ public class QueueingStreamingClientImpl implements StreamingClient {
 
     @Override
     public void onInvalidAuthCredentials(Response response) {
+        LOGGER.error("Invalid Auth Credentials " + getSessionId());
         _fsm.onInvalidAuthCredentials(response);
     }
 
