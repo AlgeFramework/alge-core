@@ -22,4 +22,4 @@ echo "============================="
 echo ""
 
 
-java -Dconfig.properties=${ABS_CONFIG_PATH}/${CONFIG_FILE_NAME} -jar ${INSTALL_DIR}/${MAIN_JAR_NAME}-${VERSION}.jar
+java -Dconfig.properties=${ABS_CONFIG_PATH}/${CONFIG_FILE_NAME} -Djava.util.logging.config.file=${ABS_CONFIG_PATH}/logging.properties -jar ${INSTALL_DIR}/${MAIN_JAR_NAME}-${VERSION}.jar
