@@ -34,6 +34,10 @@ mvn compile
 mvn test
 mvn package
 
+to create a set of jars for distribution:
+mvn jar:jar
+mvn dependency:copy-dependencies
+
 
 To generate a fresh version of the FSM, navigate to the smc directory and issue the following command:
 java -jar <path_to>/Smc.jar -sync -java StreamingClientFSM.sm

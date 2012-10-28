@@ -35,6 +35,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
 
 
         sessionId = credentials[0];
+        //sessionId = "00D30000001IZ8g!AREAQLoEY0wC60qdHyw07EarfsG9s.MnbBVAq0.49FSQNoy0oyj5SaC7sqtvUEhpNvlMojZgOUKTy3hWbLIoqoVzwaUJ8Xns";
         instance = credentials[1];
         asyncHttpClient_base = new NingAsyncHttpClientImpl();
         //asyncHttpClient_concurrencyControl_base = new NingAsyncHttpClientImpl(new Semaphore(1));
@@ -86,6 +87,7 @@ public class NingAsyncHttpClientImplTest extends TestCase {
         Response response = future.get();
         System.out.println("Time taken = " + (System.currentTimeMillis() - time1));
         String responseBody = response.getResponseBody();
+        System.out.println(responseBody);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(responseBody);
         //System.out.println("size of array = " + rootNode.size());
