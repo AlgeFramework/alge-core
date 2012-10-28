@@ -106,6 +106,7 @@
                         <argument>-XX:+PrintGCDetails</argument>
                         <argument>-Xloggc:streaming_client_gc.log</argument>
                         <argument>-Djava.util.logging.config.file=src/main/resources/logging.properties</argument>
+                        <argument>-Dconfig.properties=src/main/resources/config.properties</argument>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>com.sfdc.http.loadgen.Main</argument>
@@ -125,6 +126,45 @@
                 <configuration>
                     <verbose>true</verbose>
                     <sync>true</sync>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>dependency</classpathPrefix>
+                            <mainClass>com.sfdc.http.loadgen.Main</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <mode>development</mode>
+                            <url>${project.url}</url>
+                            <key>value</key>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
 

@@ -21,10 +21,10 @@ public class Main {
 
     public static void main(String[] args) {
         checkSystemPrerequisites();
-        RequestGenerator rg = new RequestGenerator("src/main/resources/config.properties");
+        RequestGenerator rg = new RequestGenerator(getConfigFileLocation());
         Thread requestsThread = new Thread(rg);
         requestsThread.start();
-        Properties p = loadConfigs("src/main/resources/config.properties");
+        Properties p = loadConfigs(getConfigFileLocation());
         boolean collectStats = Boolean.parseBoolean(p.getProperty("automatically_collect_operation_counts", "true"));
         Thread statsThread = null;
         StatsReporter statsReporter = new StatsReporter();
@@ -92,5 +92,9 @@ public class Main {
             e.printStackTrace();
         }
 
+    }
+
+    public static String getConfigFileLocation() {
+        return System.getProperty("config.properties", "src/main/resources/config.properties");
     }
 }

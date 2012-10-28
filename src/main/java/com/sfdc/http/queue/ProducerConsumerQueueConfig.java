@@ -113,10 +113,6 @@ public class ProducerConsumerQueueConfig {
         LOGGER.info("Queue stats collection = " + collectQueueStats);
     }
 
-    public ProducerConsumerQueueConfig() throws IOException {
-        this("src/main/resources/config.properties");
-    }
-
     public SessionIdReader getSessionIdReader(String sessionIdFile) throws FileNotFoundException {
         return new SessionIdReader(sessionIdFile);
     }
