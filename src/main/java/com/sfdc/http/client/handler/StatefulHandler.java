@@ -89,7 +89,7 @@ public class StatefulHandler extends ThrottlingGenericAsyncHandler implements As
                 statsManager.incrementConnectCount();
             }
             LOGGER.info(response.getClientId() + ":connect:complete");
-            LOGGER.info("ReceivedEvent: " + response.getResponseBody());
+            LOGGER.info("ReceivedEvent~" + System.currentTimeMillis() + "~" + response.getResponseBody());
 
             streamingClient.onConnectComplete();
         } else {
