@@ -8,7 +8,10 @@ import com.sfdc.stats.StatsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -89,7 +92,9 @@ public class StatefulHandler extends ThrottlingGenericAsyncHandler implements As
                 statsManager.incrementConnectCount();
             }
             LOGGER.info(response.getClientId() + ":connect:complete");
-            LOGGER.info("ReceivedEvent~" + System.currentTimeMillis() + "~" + response.getResponseBody());
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            LOGGER.info("ReceivedEvent~" + dateFormat.format(date) + "~" + response.getResponseBody());
 
             streamingClient.onConnectComplete();
         } else {
