@@ -93,7 +93,7 @@ public class StatefulHandler extends ThrottlingGenericAsyncHandler implements As
             }
             LOGGER.info(response.getClientId() + ":connect:complete");
             //DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T':HH:mm:ss.SSSZ");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
             Date date = new Date();
             LOGGER.info("ReceivedEvent~" + dateFormat.format(date) + "~" + response.getResponseBody());
