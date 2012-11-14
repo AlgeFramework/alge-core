@@ -26,6 +26,7 @@ public class Main {
         requestsThread.start();
         Properties p = loadConfigs(getConfigFileLocation());
         boolean collectStats = Boolean.parseBoolean(p.getProperty("automatically_collect_operation_counts", "true"));
+        int runTime = Integer.parseInt(p.getProperty("runtime", "600000"));
         Thread statsThread = null;
         StatsReporter statsReporter = new StatsReporter();
         if (collectStats) {
@@ -34,7 +35,7 @@ public class Main {
 
         try {
             //todo: running time of the load generator - needs to be parameterized
-            Thread.sleep(600 * 1000);
+            Thread.sleep(runTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
