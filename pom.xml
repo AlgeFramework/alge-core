@@ -4,9 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>asyncstreamingclient</groupId>
-    <artifactId>asyncstreamingclient</artifactId>
+    <groupId>sfdc-alge-core</groupId>
+    <artifactId>alge-core</artifactId>
     <version>1.0</version>
     <dependencies>
         <dependency>
@@ -52,36 +51,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.myownsmcjar</groupId>
-            <artifactId>my_smc</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>SystemInfo</groupId>
             <artifactId>SystemInfo</artifactId>
             <version>1.0</version>
         </dependency>
-        <!--
-        if we use this dependency, command line maven is unhappy.
-        So we comment it out, and then add a jar to the intellij
-        project
-        -->
-        <!--
-        <dependency>
-            <groupId>org.myownsmcjar</groupId>
-            <artifactId>my_smc</artifactId>
-            <version>dunno</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Smc.jar</systemPath>
-        </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>smc-maven-plugin</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        -->
     </dependencies>
     <build>
         <plugins>
@@ -111,21 +84,6 @@
                         <classpath/>
                         <argument>com.sfdc.http.loadgen.Main</argument>
                     </arguments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>smc-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>smc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <verbose>true</verbose>
-                    <sync>true</sync>
                 </configuration>
             </plugin>
             <plugin>
