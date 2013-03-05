@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class HttpClientTest extends TestCase {
     private HttpClient httpClient;
-    private static final String STATIC_URL = "http://www.gnu.org/";
+    private static final String STATIC_URL = "http://localhost:8080/";
 
     public void setUp() throws Exception {
         httpClient = new HttpClient();

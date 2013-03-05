@@ -5,6 +5,7 @@ import com.sfdc.http.client.handler.ResponseHandler;
 import com.sfdc.http.client.handler.ThrottlingGenericAsyncHandler;
 import com.sfdc.http.queue.HttpWorkItem;
 import com.sfdc.http.queue.ProducerConsumerQueue;
+import com.sfdc.http.queue.ProducerInterface;
 import com.sfdc.stats.StatsManager;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class HttpClient {
     private HashMap<String, String> parameters;
     private ProducerConsumerQueue producerConsumerQueue;
     private HttpLoadGenerator httpLoadGenerator;
+    private final ProducerInterface producer;
 
     public HttpClient() {
         httpLoadGenerator = HttpLoadGenerator.getInstance();
@@ -46,6 +48,7 @@ public class HttpClient {
             httpLoadGenerator.start();
         }
         this.producerConsumerQueue = httpLoadGenerator.getProducerConsumerQueue();
+        this.producer = producerConsumerQueue.getProducer();
 
     }
 
@@ -76,7 +79,7 @@ public class HttpClient {
         workItem.setHandler(new ThrottlingGenericAsyncHandler(producerConsumerQueue.getConcurrencyPermit(), StatsManager.getInstance(), responseHandler, null));
         workItem.setOperation(HttpWorkItem.GET);
         workItem.setInstance(url);
-        producerConsumerQueue.getProducer().publish(workItem);
+        producer.publish(workItem);
     }
 
     public void startGet(String url,
@@ -91,7 +94,7 @@ public class HttpClient {
         workItem.setHandler(throttlingGenericAsyncHandler);
         workItem.setOperation(HttpWorkItem.GET);
         workItem.setInstance(url);
-        producerConsumerQueue.getProducer().publish(workItem);
+        producer.publish(workItem);
     }
 
     public void startGet(String url,
@@ -128,7 +131,7 @@ public class HttpClient {
         workItem.setHandler(new ThrottlingGenericAsyncHandler(producerConsumerQueue.getConcurrencyPermit(), StatsManager.getInstance(), responseHandler, null));
         workItem.setOperation(HttpWorkItem.POST);
         workItem.setInstance(url);
-        producerConsumerQueue.getProducer().publish(workItem);
+        producer.publish(workItem);
     }
 
     public void startPost(String url,
@@ -143,7 +146,7 @@ public class HttpClient {
         workItem.setHandler(throttlingGenericAsyncHandler);
         workItem.setOperation(HttpWorkItem.POST);
         workItem.setInstance(url);
-        producerConsumerQueue.getProducer().publish(workItem);
+        producer.publish(workItem);
     }
 
     public void startPost(String url,
@@ -153,6 +156,18 @@ public class HttpClient {
         workItem.setInstance(url);
         workItem.setPostBody(body);
         workItem.setHandler(new ThrottlingGenericAsyncHandler(producerConsumerQueue.getConcurrencyPermit(), StatsManager.getInstance(), null, this));
-        producerConsumerQueue.getProducer().publish(workItem);
+        producer.publish(workItem);
+    }
+
+    /**
+     * ******************************************************************
+     * <p/>
+     * EXECUTE METHOD FOR CLIENTS THAT PASS A WORK ITEM
+     * <p/>
+     * *******************************************************************
+     */
+
+    public void execute(HttpWorkItem workItem) {
+        producer.publish(workItem);
     }
 }

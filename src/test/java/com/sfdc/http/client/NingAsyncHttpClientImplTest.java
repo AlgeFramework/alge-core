@@ -2,6 +2,7 @@ package com.sfdc.http.client;
 
 import com.ning.http.client.Cookie;
 import com.ning.http.client.Response;
+import com.sfdc.http.client.handler.ThrottlingGenericAsyncHandler;
 import junit.framework.TestCase;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -9,10 +10,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 
 /**
@@ -47,6 +45,12 @@ public class NingAsyncHttpClientImplTest extends TestCase {
 
     }
 
+
+    public void testGet_2() {
+        ThrottlingGenericAsyncHandler t = new ThrottlingGenericAsyncHandler(new Semaphore(1), null, null, null);
+        NingAsyncHttpClientImpl httpClient = new NingAsyncHttpClientImpl();
+        httpClient.startGet("http://localhost:8080/", null, null, null, t);
+    }
 
     public void testGet() throws ExecutionException, InterruptedException {
         Future<Response> future = asyncHttpClient_base.startGet("http://www.gnu.org/", null, null, null, null);

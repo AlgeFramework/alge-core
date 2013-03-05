@@ -1,0 +1,79 @@
+
+
+rev2
+====
+below algorithm likely wont scale to multiple threads ...
+
+so perhaps change the algorithm to:
+out of one user list(across all groups)
+- split list into multiple lists based on criteria (ie ., simple split, or per group etc .,)
+
+then each thread picks up a sub list and  executes that sublist as follows:
+
+     get next request
+     ------------------------
+     for user in all users
+     -- get next user
+     -- get users next request
+     ---- if done doneUsers ++
+    ############################# ------ remove user from users
+     ------ if doneUsers == totalUsers return DONE
+     return DONE
+
+
+
+rev1
+====
+loop invariant:  groups always have members that are not in "done" state.   (else we wouldn't be in the loop)
+termination condition: all users in all loops are in "done" state.
+
+get requests across all groups
+------------------------------
+for group in all groups
+-- get next request
+---- if yes
+---- make request
+---- if done doneGroups ++
+------ remove group from groups
+##------ if doneGroups == totalGroups EXIT - not needed since we're removing the group from the list.  after a point we wont have any groups in the list.
+---- if not ready continue
+done. exit.
+
+
+
+group: get next request
+------------------------
+for user in all users
+-- get next user
+-- get users next request
+---- if done doneUsers ++
+------ remove user from users
+##------ if doneUsers == totalUsers return DONE - not needed since we're removing the user from the users list
+---- if not ready continue
+return DONE
+
+
+user: get next request
+-----------------------
+if no more requests in list
+-- return done
+if request in progress
+-- return "not ready"
+acquire request in progress mutex
+return next request
+
+
+main
+----
+thread pool (initially size 1) to tackle requests in a scalable fashion
+
+
+
+
+
+
+
+
+
+
+
